@@ -1,14 +1,13 @@
 """docstring"""
+import sys
 import socket
 import pickle
-from core_game import Network, UserInputs, Player, Orb
+from core_game import Network, Player
 from config import *
 import time
-import threading
 import bisect
 import random
 import collections
-import sys
 
 
 class Client(Network):
@@ -16,56 +15,60 @@ class Client(Network):
     def __init__(self):
         self.server_address = ('0.0.0.0', NETWORK_PORT)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.settimeout(0)
         self.client_socket.bind(('0.0.0.0', 0))
+        self.client_socket.settimeout(0)
 
-        self._last_transmit_time = time.time()
-        self.server_time = time.time()
         self.connected = False
         self.synced = False
-
-        self.added_ping = 0
-        self.packet_loss_rate = 0
-        self.lag_spike_duration = 0
-        self.data_load = 0
-        self.connection_quality = (0,0,0,0)
-        self.latency = 0
-        self.last_probe_time = time.time()
-
         self.server_players_queue = collections.deque([], 256)
         self.server_orbs_queue = collections.deque([], 256)
         self.death_queue = collections.deque([], 256)
-        self.past_players_queue = collections.deque([], 256)
         self.send_queue = collections.deque([], 256)
+        self.past_players_queue = collections.deque([], 1024)
         self.packets_queue = collections.deque([], 1024)
         self.acked_packets = set()
+
+        self.data_load = 0
+        self.added_ping = 0
+        self.packet_loss_rate = 0
+        self.lag_spike_duration = 0
+        self.latency = 0
+        self.connection_quality = (0,0,0,0)
+        self.last_probe_time = time.time()
+        self._last_transmit_time = time.time()
+        self.server_time = time.time()
+        self.heartbeat = float('-Inf')
 
         self.server_players = {}
         self.past_players = {}
         self.player = Player('')
         self.player_id = 0
+        self.end_game_state = ''
 
     def connect(self, player_name, server_ip):
         """Connects to the server"""
         if not self.connected:
             self.player = Player(player_name)
             self.server_address = (server_ip, NETWORK_PORT)
-            for _ in range(CONNECTION_ATTEMPTS):
-                self._send_messages(CONNECT_CODE, self.encode_player(self.player))
+            for _ in range(CONNECTION_ATTEMPTS):  # Ætti ég bara að hard-kóða tölur sem eru bara notaðar á einum stað?
+                self._add_message(CONNECT_CODE, \
+                        self.encode_player(self.player))
+                self._send_messages()
                 time.sleep(CONNECTION_INTERVAL)
                 self._retrieve_messages()
                 if self.connected: break
-
-    def get_player_info(self):
-        return self.player_id, self.player
 
     def disconnect(self):
         """Disconnects from the server"""
         self.connected = False
         self.synced = False
         self.added_ping = 0
-        for _ in range(3): self._send_messages(DISCONNECT_CODE, self.player_id)
+        for _ in range(3):
+            self._add_message(DISCONNECT_CODE, self.player_id)
+            self._send_messages()
+
+    def get_player_info(self):
+        return self.player_id, self.player
 
     def is_connected(self):
         return self.connected
@@ -73,17 +76,18 @@ class Client(Network):
     def is_synced(self):
         return self.synced
 
-    def get_connection_quality(self):
-        return self.connection_quality
+    def get_end_state(self):
+        return self.end_game_state
 
-    def _update_connection_qualty(self, curr_time):
-        self.latency = min(self.latency, curr_time - self.server_time)
-        if curr_time - self.last_probe_time > 10*CLIENT_TRANSMIT_INTERVAL:
+    def get_connection_statistics(self):
+        return self.connection_statistics
+
+    def _update_connection_statistics(self, curr_time):
+        if curr_time - self.last_probe_time > STATS_PROBE_INTERVAL:
             bandwidth = self.data_load/(curr_time - self.last_probe_time)
-            self.connection_quality = (self.latency, bandwidth, \
+            self.connection_statistics = (self.latency, bandwidth, \
                     self.packet_loss_rate, self.lag_spike_duration)
             self.data_load = 0
-            self.latency = 1
             self.last_probe_time = curr_time
 
     def increase_ping(self):
@@ -105,43 +109,50 @@ class Client(Network):
         self.lag_spike_duration = max(0, self.lag_spike_duration - 0.002)
 
     def needs_transmit(self):
-        return time.time() - self._last_transmit_time > CLIENT_TRANSMIT_INTERVAL
+        time_passed = time.time() - self._last_transmit_time
+        return time_passed > CLIENT_TRANSMIT_INTERVAL
 
-    def sync_state(self, players, orbs, trackers):
+    def sync_state(self, time_delta, players, orbs, trackers):
         """Sends key presses to the server"""
         self._retrieve_messages()
-        self._send_messages()
-        curr_time, curr_players = time.time(), {}
+        curr_time = time.time()
         while self.server_players_queue:
             received_time = self.server_players_queue[0][0]
-            if received_time >= curr_time: break
-            _, rtt, server_pulse, self.server_players = self.server_players_queue.popleft()
-            self.server_time = max(self.server_time, curr_time - rtt)
-            self._send_messages(PING_CODE, server_pulse)
+            if received_time > curr_time: break
+            _, round_trip_time, server_pulse, new_players = \
+                    self.server_players_queue.popleft()
+            self._apply_players_update(server_pulse, new_players)
+            new_server_time = curr_time - round_trip_time
+            self.server_time = max(self.server_time, new_server_time)
+            self.latency = curr_time - self.server_time
+            self._add_message(PING_CODE, server_pulse)
 
         effective_server_time = self.server_time - SERVER_TRANSMIT_INTERVAL/2
         while self.past_players_queue:
             past_time = self.past_players_queue[0][0]
             if past_time > effective_server_time: break
-            self.past_players = self.past_players_queue.popleft()[1]
+            _, self.past_players = self.past_players_queue.popleft()
 
         for player_id, player in self.server_players.items():
-            if player_id not in players: players[player_id] = player
-
+            if player_id not in players:
+                players[player_id] = player
         for player_id in list(players):
             if player_id not in self.server_players:
                 del players[player_id]
 
-        self._ack_updates(curr_time, orbs)
+        self._acknowledge_updates(curr_time, orbs)
         self._verify_connection(curr_time, players)
         if self.synced:
-            encoded_inputs = self.encode_inputs(players[self.player_id].inputs)
-            self._send_messages(KEY_PRESSES_CODE, encoded_inputs)
-            self._sync_player_positions(players)
+            message = self.encode_inputs(self.player.inputs)
+            self._add_message(INPUTS_CODE, message)
+            self._sync_player_positions(time_delta, players)
             self._update_trackers(trackers)
 
+        self._send_messages()
         self._last_transmit_time = curr_time
-        self._update_connection_qualty(curr_time)
+        self._update_connection_statistics(curr_time)
+
+        curr_players = {}
         for player_id, player in players.items():
             curr_players[player_id] = (player.x, player.y, player.radius)
         self.past_players_queue.append((curr_time, curr_players))
@@ -156,59 +167,80 @@ class Client(Network):
 
         if self.player_id in self.past_players and 'past' in trackers:
             tracker = trackers['past']
-            past_player = self.past_players[self.player_id]
-            tracker.x, tracker.y = past_player[0], past_player[1]
-            tracker.radius = past_player[2]
+            past_x, past_y, past_radius = self.past_players[self.player_id]
+            tracker.x, tracker.y = past_x, past_y
+            tracker.radius = past_radius
         elif 'past' in trackers:
             trackers['past'].radius = 0
 
-    def _sync_player_positions(self, players):
-        """Adjusts for discrepancies between local and server positions. Prevents butterfly effect."""
-        for player_id, player in players.items():
-            if player_id in self.past_players:
-                player.x += 0.01*(self.server_players[player_id].x - self.past_players[player_id][0])
-                player.y += 0.01*(self.server_players[player_id].y - self.past_players[player_id][1])
+    def _sync_player_positions(self, time_delta, players):
+        """Adjusts for discrepancies between local and server positions.
 
+        Prevents butterfly effect.
+        params: 
+        """
+        # Adjust gravity to control how quickly to correct for errors
+        gravity = 4*time_delta
+        for player_id, player in players.items():
             player.radius = self.server_players[player_id].radius
             if player_id != self.player_id: 
                 player.inputs = self.server_players[player_id].inputs
 
-    def _ack_updates(self, curr_time, orbs):
-        # Process orb updates from the server
-        while self.packets_queue and self.packets_queue[0][0] <= curr_time - TIMEOUT_LIMIT:
-            self.acked_packets.discard(self.packets_queue.popleft()[1])
+            if player_id not in self.past_players: continue
+            past_x, past_y, _ = self.past_players[player_id]
+            player.x += gravity*(self.server_players[player_id].x - past_x)
+            player.y += gravity*(self.server_players[player_id].y - past_y)
+
+    def _acknowledge_updates(self, curr_time, orbs):
+        """"""
+        while self.packets_queue:
+            past_time = self.packets_queue[0][0]
+            if curr_time - past_time < TIMEOUT_LIMIT: break
+            _, packet_id = self.packets_queue.popleft()
+            self.acked_packets.discard(packet_id)
 
         while self.death_queue:
             received_time = self.death_queue[0][0]
-            if received_time >= curr_time: break
-            _, packet_id, new_players = self.death_queue.popleft()
-            self.server_players = new_players
-            self.synced = False
-            self._send_messages(ACK_CODE, packet_id)
-            self.packets_queue.append((curr_time, packet_id))
-            self.acked_packets.add(packet_id)
+            if received_time > curr_time: break
+            _, packet_id, server_pulse, new_players = \
+                    self.death_queue.popleft()
+            self._apply_players_update(server_pulse, new_players)
+            self._reset_player()
+            self._ack_update(curr_time, packet_id)
 
-        received_orbs = []
-        while self.server_orbs_queue and self.server_orbs_queue[0][0] <= curr_time:
-            received_orbs.append(self.server_orbs_queue.popleft())
-        received_orbs.sort(key=lambda x: x[1])
+        received_orb_updates = []
+        while self.server_orbs_queue:
+            received_time = self.server_orbs_queue[0][0]
+            if received_time > curr_time: break
+            _, packet_id, updates = self.server_orbs_queue.popleft()
+            received_orb_updates.append((packet_id, updates))
+        received_orb_updates.sort()
 
-        for _, packet_id, updates in received_orbs:
-            for add, orb in updates:
-                if (add and orb in orbs) or (not add and orb not in orbs):
-                    continue
-            if packet_id in self.acked_packets: continue
-            for add, orb in updates:
-                if add: orbs[orb] = orb
-                elif orb in orbs:
+        for packet_id, (additions, removals) in received_orb_updates:
+            if packet_id in self.acked_packets:
+                self._add_message(ACK_CODE, packet_id)
+                continue
+            if all(orb in orbs for orb in removals) \
+                    and all(orb not in orbs for orb in additions):
+                for orb in additions:
+                    orbs[orb] = orb
+                for orb in removals:
                     orbs[orb].erase()
                     del orbs[orb]
-            self._send_messages(ACK_CODE, packet_id)
-            self.packets_queue.append((curr_time, packet_id))
-            self.acked_packets.add(packet_id)
+                self._ack_update(curr_time, packet_id)
+
+    def _apply_players_update(self, server_pulse, new_players):
+        if server_pulse > self.heartbeat:
+            self.heartbeat = server_pulse
+            self.server_players = new_players
+
+    def _ack_update(self, curr_time, packet_id):
+        self._add_message(ACK_CODE, packet_id)
+        self.packets_queue.append((curr_time, packet_id))
+        self.acked_packets.add(packet_id)
 
     def _verify_connection(self, curr_time, players):
-        # Determines if the connection with the server is alive
+        """Determines if the connection with the server is alive"""
         if self.player_id not in self.server_players:
             self.connected = False
             return
@@ -217,13 +249,15 @@ class Client(Network):
         synchronized = curr_time - self.server_time < PLAYER_INTERRUPT_LIMIT
 
         if not self.synced and synchronized:
-            self.player.x = self.server_players[self.player_id].x
-            self.player.y = self.server_players[self.player_id].y
-            self.player.color_idx = self.server_players[self.player_id].color_idx
-            self.past_players = {}
-            self.past_players_queue.clear()
-            self.server_time = curr_time
+            self._reset_player()
         self.synced = synchronized
+
+    def _reset_player(self):
+        self.player.x = self.server_players[self.player_id].x
+        self.player.y = self.server_players[self.player_id].y
+        self.player.color_idx = self.server_players[self.player_id].color_idx
+        self.past_players = {}
+        self.past_players_queue.clear()
 
     def _simulate_connection_instability(self):
         """Simulates packet loss and lag spikes"""
@@ -232,61 +266,81 @@ class Client(Network):
         if random.randrange(100) < self.packet_loss_rate:
             raise Exception("Packet Loss.")
 
-    def _send_messages(self, code = -1, message = ''):
+    def _add_message(self, code, message):
+        self.send_queue.append((time.time(), (code, message)))
+
+    def _send_messages(self):
         """Sends messages to the server from the message queue"""
         curr_time = time.time()
-        if code != -1: self.send_queue.append((curr_time, (code, message)))
-        while self.send_queue and curr_time - self.send_queue[0][0] >= self.added_ping/2:
+        while self.send_queue:
+            send_time = self.send_queue[0][0]
+            if curr_time - send_time < self.added_ping/2: break
             try:
-                input_time, data = self.send_queue.popleft()
+                _, data = self.send_queue.popleft()
                 self._simulate_connection_instability()
                 data = pickle.dumps(data)
                 self.data_load += sys.getsizeof(data)+28
                 self.client_socket.sendto(data, self.server_address)
             except Exception as exc:
-                pass
-                #print("[CLIENT] Outgoing data transmission failed for reasons:", exc)
+                print("[CLIENT] Data transmission failed for reasons:", exc)
 
     def _retrieve_messages(self):
-        """Retrieves messages from the server and updates the server game state"""
+        """Retrieves and processes messages from the server"""
         while True:
             try:
                 data, addr = self.client_socket.recvfrom(4096)
                 self._simulate_connection_instability()
                 self.data_load += sys.getsizeof(data)+28
                 code, data = pickle.loads(data)
-                curr_time = time.time() + self.added_ping/2
+                reception_time = time.time() + self.added_ping/2
 
-                if code == CONNECT_CODE: self._accept_connection(data)
-                elif code == UPDATE_PLAYERS_CODE: self._update_players(data, curr_time)
-                elif code == UPDATE_ORBS_CODE: self._update_orbs(data, curr_time)
-                elif code == PLAYER_DEATH_CODE: self._handle_death(data, curr_time)
-                elif code == DISCONNECT_CODE: self._accept_disconnection(addr)
+                if code == CONNECT_CODE:
+                    self._accept_connection(data)
+                elif code == UPD_PLAYERS_CODE:
+                    self._update_players(data, reception_time)
+                elif code == UPD_ORBS_CODE:
+                    self._update_orbs(data, reception_time)
+                elif code == DEATH_CODE:
+                    self._handle_death(data, reception_time)
+                elif code == DISCONNECT_CODE:
+                    self._accept_disconnection(addr)
 
             except Exception as exc:
-                if str(exc).startswith('[WinError 10035]'): break  # Buffer empty
-                #print("[CLIENT] Incoming data reception failed for reasons:", exc)
+                if str(exc).startswith('[WinError 10035]'): break  #Timed out
+                print("[CLIENT] Data reception failed for reasons:", exc)
 
     def _accept_connection(self, data):
-        if not self.connected: 
+        if not self.connected:
             self.player_id = data
             self.connected = True
 
     def _update_players(self, data, curr_time):
-        new_players, round_trip_time, server_pulse = data
-        new_players = {player_id : self.decode_player(player) for player_id, player in new_players}
-        self.server_players_queue.append((curr_time, round_trip_time, server_pulse, new_players))
+        received_players, round_trip_time, server_pulse = data
+        new_players = {}
+        for player_id, player in received_players:
+            new_players[player_id] = self.decode_player(player)
+        update = (curr_time, round_trip_time, server_pulse, new_players)
+        self.server_players_queue.append(update)
 
     def _update_orbs(self, data, curr_time):
         packet_id, updates = data
-        orb_updates = [(add, (self.decode_orb(orb))) for add, orb in updates]
+        if packet_id in self.acked_packets:
+            self._add_message(ACK_CODE, packet_id)
+            return
+        orb_additions, orb_removals = updates
+        orb_additions = [self.decode_orb(orb) for orb in orb_additions]
+        orb_removals = [self.decode_orb(orb) for orb in orb_removals]
+        orb_updates = (orb_additions, orb_removals)
         self.server_orbs_queue.append((curr_time, packet_id, orb_updates))
 
     def _handle_death(self, data, curr_time):
-        packet_id, new_players = data
-        new_players = {player_id : self.decode_player(player) for player_id, player in new_players}
-        self.death_queue.append((curr_time, packet_id, new_players))
+        packet_id, received_players, server_pulse = data
+        new_players = {}
+        for player_id, player in received_players:
+            new_players[player_id] = self.decode_player(player)
+        update = (curr_time, packet_id, server_pulse, new_players)
+        self.death_queue.append(update)
 
-    def _accept_disconnection(self, address):
-        if address == self.server_address:
-            self.connected = False
+    def _accept_disconnection(self, end_game_state):
+        self.end_game_state = end_game_state
+        self.connected = False

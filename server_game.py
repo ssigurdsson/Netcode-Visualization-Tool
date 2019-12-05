@@ -14,12 +14,11 @@ class ServerGame:
 
     def __init__(self):
         os.environ["SDL_VIDEO_CENTERED"] = '1'
-        self.window = None
-        self.display_window()
+        self.window = self._get_window(DEFAULT_WINDOW_SIZE)
         self.server = udp_server.Server()
         self.players = {}
         self.orbs = []
-        self.player_deaths = []
+        self.player_deaths = set()
         self.server_observer = self._get_server_observer()
         self.observers = collections.deque([self.server_observer])
         self.run = False
@@ -27,13 +26,14 @@ class ServerGame:
     def _get_server_observer(self):
         """Hacky way to generalize observer views using the Player class"""
         observer = Player('')
-        observer.x, observer.y = WIDTH//2, HEIGHT//2
-        observer.scale = WIDTH/DEFAULT_WINDOW_SIZE[0]
+        observer.x, observer.y = WIDTH//2, HEIGHT//2  # Centers the view
+        observer.scale = WIDTH/DEFAULT_WINDOW_SIZE[0]  # Expands the view
         return observer
 
-    def display_window(self, window_size = DEFAULT_WINDOW_SIZE):
-        self.window = pg.display.set_mode(window_size, pg.HWSURFACE)
-        pg.display.set_caption("Blob Game NetCode Visualization Tool")
+    def _get_window(self, window_size):
+        window = pg.display.set_mode(window_size, pg.HWSURFACE)
+        pg.display.set_caption("Blob Game Server")
+        return window
 
     def start(self):
         if not self.run:
@@ -50,11 +50,11 @@ class ServerGame:
     def main_loop(self, time_delta):
         """Main function that maintains and updates the game state"""
         for player in self.players.values(): player.move(time_delta)
-        self._player_collisions()
-        self._ball_collisions()
+        self._handle_player_collisions()
+        self._handle_ball_collisions()
         if self.server.needs_sync():
             self._replenish_orbs()
-            orb_contexts = self._update_local_orbs()
+            orb_contexts = self._get_orb_contexts()
             self._sync_server_players(orb_contexts)
         self._update_display(time_delta)
 
@@ -66,13 +66,13 @@ class ServerGame:
             self.stop()
         elif self.window and event.type == pg.KEYDOWN:
             if event.key == pg.K_1:
-                self.display_window((1024,720))
+                self.window = self._get_window((1024,720))
                 self.server_observer.scale = WIDTH/1024
             elif event.key == pg.K_2:
-                self.display_window((1366,768))
+                self.window = self._get_window((1366,768))
                 self.server_observer.scale = WIDTH/1366
             elif event.key == pg.K_3:
-                self.display_window((1920,1080))
+                self.window = self._get_window((1920,1080))
                 self.server_observer.scale = WIDTH/1920
         elif event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -86,7 +86,7 @@ class ServerGame:
     def _roll_back_observer(self):
         self.observers.appendleft(self.observers.pop())
 
-    def _player_collisions(self):
+    def _handle_player_collisions(self):
         """Checks for player collisions and handles those collision"""
         for player_id_1, player_1 in self.players.items():
             for player_id_2, player_2 in self.players.items():
@@ -95,55 +95,49 @@ class ServerGame:
                 if dist < player_1.radius - player_2.radius*COLLISION_MARGIN:
                     player_1.eat(player_2)
                     new_player_2 = Player(player_2.name)
-                    self._get_spawn_location(new_player_2)
-                    self.player_deaths.append(player_id_2)
+                    self._give_spawn_location(new_player_2)
+                    self.player_deaths.add(player_id_2)
                     self.players[player_id_2] = new_player_2
-                    self.observers[self.observers.index(player_2)] = new_player_2
+                    obs_idx = self.observers.index(player_2)
+                    self.observers[obs_idx] = new_player_2
 
-    def _ball_collisions(self):
+    def _handle_ball_collisions(self):
         """Finds and consumes the orbs that collided with players"""
         player_list = list(self.players.values())
         player_list.sort(key=lambda x: x.x - x.radius)
-        orb_idx, removed = 0, set()
+        left_orb_idx, removed = 0, set()
         for player in player_list:
-            while orb_idx < len(self.orbs):
-                orb = self.orbs[orb_idx]
-                if player.x - player.radius > orb.x + orb.radius:
-                    orb_idx += 1
+            while left_orb_idx < len(self.orbs):
+                if self.orbs[left_orb_idx].x < player.x - player.radius:
+                    left_orb_idx += 1
                 else: break
 
-            for i in range(orb_idx, len(self.orbs)):
-                if orb.x - orb.radius > player.x + player.radius: break
+            for i in range(left_orb_idx, len(self.orbs)):
                 orb = self.orbs[i]
+                if orb.x > player.x + player.radius: break
                 dist = self._find_distance(player, orb)
                 if dist <= player.radius - orb.radius*COLLISION_MARGIN:
-                    if i not in removed:
-                        new_area = player.radius**2 + (orb.radius/2)**2
-                        player.radius = math.sqrt(new_area)
+                    if i not in removed: player.eat(orb)
                     removed.add(i)
 
-        if not removed: return
-        left_idx = 0
+        new_orbs = []
         for i, orb in enumerate(self.orbs):
-            if i in removed: continue
-            self.orbs[left_idx], self.orbs[i] = \
-                        self.orbs[i], self.orbs[left_idx]
-            left_idx += 1
-        for _ in range(len(removed)): self.orbs.pop()
+            if i not in removed: new_orbs.append(orb)
+        self.orbs = new_orbs
 
     def _replenish_orbs(self):
         """Replenishes the orb population up to the target number of orbs"""
         orb_set = set(self.orbs)
         while len(self.orbs) < TARGET_ORB_NUMBER:
             new_orb = Orb()
-            self._get_spawn_location(new_orb)
+            self._give_spawn_location(new_orb)
             if new_orb not in orb_set:
                 self.orbs.append(new_orb)
                 orb_set.add(new_orb)
         self.orbs.sort(key=lambda x: x.x - x.radius)
 
-    def _get_spawn_location(self, obj):
-        """Yields a spawn location outside the body of any other players."""
+    def _give_spawn_location(self, obj):
+        """Yields a spawn location outside the body of any other player"""
         # Will this freeze up?
         while True:
             obj.x, obj.y = random.randrange(WIDTH), random.randrange(HEIGHT)
@@ -159,21 +153,22 @@ class ServerGame:
     def _sync_server_players(self, orb_contexts):
         """f"""
         self.server.sync_state(self.players, orb_contexts, self.player_deaths)
+        self.player_deaths.clear()
 
-        player_update_queue = self.server.get_player_updates()
-        while player_update_queue:
-            add, data = player_update_queue.popleft()
-            if add:
-                player_id, new_player = data
-                self._get_spawn_location(new_player)
-                self.players[player_id] = new_player
-                self.observers.append(new_player)
-            else:
-                player_id = data
-                if player_id in self.players:
-                    self.observers.remove(self.players[player_id])
-                    self.server.drop_player(player_id)
-                    del self.players[player_id]
+        player_remove_queue = self.server.get_player_removals()
+        while player_remove_queue:
+            player_id = player_remove_queue.popleft()
+            if player_id in self.players:
+                self.observers.remove(self.players[player_id])
+                self.server.drop_player(player_id)
+                del self.players[player_id]
+
+        player_add_queue = self.server.get_player_additions()
+        while player_add_queue:
+            player_id, new_player = player_add_queue.popleft()
+            self._give_spawn_location(new_player)
+            self.players[player_id] = new_player
+            self.observers.append(new_player)
 
         player_input_queue = self.server.get_player_inputs()
         while player_input_queue:
@@ -181,28 +176,30 @@ class ServerGame:
             if player_id in self.players:
                 self.players[player_id].inputs = player_inputs
 
-    def _update_local_orbs(self):
+    def _get_orb_contexts(self):
+        """d"""
         orb_contexts, player_list = [], []
         for player_id, player in self.players.items():
-            player_list.append((self._find_range(player), player_id, player))
-        player_list.sort(key=lambda x: x[2].x - x[0][0])
+            x_range, y_range = self._get_player_view_range(player)
+            player_list.append((x_range, y_range, player_id, player))
+        player_list.sort(key=lambda x: x[3].x - x[0])
 
-        orb_idx = 0
-        for (x_range,y_range), player_id, player in player_list:
-            while orb_idx < len(self.orbs):
-                if self.orbs[orb_idx].x < player.x - x_range: 
-                    orb_idx += 1
+        left_orb_idx = 0
+        for x_range, y_range, player_id, player in player_list:
+            while left_orb_idx < len(self.orbs):
+                if self.orbs[left_orb_idx].x < player.x - x_range:
+                    left_orb_idx += 1
                 else: break
 
             orb_context = set()
-            for orb in self.orbs[orb_idx:]:
+            for orb in self.orbs[left_orb_idx:]:
                 if orb.x > player.x + x_range: break
                 if abs(player.y - orb.y) <= y_range:
                     orb_context.add(orb)
             orb_contexts.append((player_id, orb_context))
         return orb_contexts
 
-    def _find_range(self, player):
+    def _get_player_view_range(self, player):
         x_range = (player.scale*BASE_WIDTH/2)*FOV_MARGIN
         y_range = (player.scale*BASE_HEIGHT/2)*FOV_MARGIN
         return x_range, y_range
@@ -213,32 +210,38 @@ class ServerGame:
 
         # Draw each player/orb/tracker
         sort_players = sorted(self.players.values(), key=lambda x: x.radius)
-        for orb in self.orbs: orb.draw(self.window, self.observers[0])
-        for player in sort_players: player.draw(self.window, self.observers[0])
+        for orb in self.orbs:
+            orb.draw(self.window, self.observers[0])
+        for player in sort_players:
+            player.draw(self.window, self.observers[0])
 
         self._draw_scoreboard(sort_players)
         self._draw_statistics(time_delta)
         pg.display.update()
 
     def _draw_scoreboard(self, sort_players):
+        """d"""
+        # Sets the text position within the window in pixels
+        top_left_x, top_left_y, delta_y = self.window.get_width()-180, 25, 30
         title = SCORE_FONT.render("Scoreboard", 1, BLACK)
-        sx, sy = self.window.get_width() - 180, 25
-        self.window.blit(title, (sx, sy))
+        self.window.blit(title, (top_left_x, top_left_y))
 
         top_players = sort_players[-5:]
         for i, player in enumerate(reversed(top_players)):
             text = SCORE_FONT.render(str(i+1) + ". " + player.name, 1, BLACK)
-            self.window.blit(text, (sx, sy + (i+1)*30))
+            self.window.blit(text, (top_left_x, top_left_y + (i+1)*delta_y))
 
     def _draw_statistics(self, time_delta):
-        # Draws the score and connection statistics
-        dx, dy, texts = 10, 15, []
-        bw = self.server.get_connection_statistics()
+        """d"""
+        texts = []
+        bandwidth, = self.server.get_connection_statistics()
         texts.append(SCORE_FONT.render("Number of players: " \
                     + str(len(self.players)), 1, BLACK))
         texts.append(SCORE_FONT.render("FPS: " \
                     + str(int(1/(time_delta+0.001))), 1, BLACK))
         texts.append(SCORE_FONT.render("Bandwidth: " \
-                    + str(int(bw/100)/10) + " KB/S", 1, BLACK))
+                    + str(int(bandwidth/100)/10) + " KB/S", 1, BLACK))
+        # Sets the text position within the window in pixels
+        top_left_x, top_left_y, delta_y = 10, 15, 40
         for i, text in enumerate(texts): 
-            self.window.blit(text, (dx, dy + i*40))
+            self.window.blit(text, (top_left_x, top_left_y + i*delta_y))

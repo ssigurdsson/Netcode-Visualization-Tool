@@ -1,45 +1,50 @@
 """docstring"""
-import random
 import os
 import pygame as pg
 import udp_client
-from core_game import Player, Orb, Tracker, UserInputs
+from core_game import Tracker
 from config import *
-import time
-import math
+import random
 
 
 class ClientMenu:
+	"""d"""
 	def __init__(self):
 		os.environ["SDL_VIDEO_CENTERED"] = '1'
-		self.name_box = InputField(512, 345, "Player Name:", max_len=NAME_MAX_LENGTH)
-		self.address_box = InputField(512, 440, "Server IP Address:", DEFAULT_IP, 15)
-		self.play_button = PlayButton(512, 510)
+		self.name_box = InputField(512, 345, 320, \
+				"Player Name:", max_len=MAX_NAME_LENGTH)
+		self.address_box = InputField(512, 440, 320, \
+				"Server IP Address:", DEFAULT_IP, 15)
+		self.play_button = PlayButton(512, 510, 230, 50)
 
-		self.window = None
+		self.run = True
+		self.window = self._get_window()
 		self.client = udp_client.Client()
 		self.menu_message = ''
 		self.game_run_time = 1
-		self.run = True
 
-		self.display_window()
-
-	def display_window(self, end_game_state = ''):
-		self.menu_message = end_game_state
-		self.window = pg.display.set_mode((1024,720), pg.HWSURFACE)
+	def _get_window(self):
+		window = pg.display.set_mode(MENU_WINDOW_SIZE, pg.HWSURFACE)
 		pg.display.set_caption("Agar NetCode Visualization Tool")
-		self.client = udp_client.Client()
+		return window
 
-	def collapse_window(self):
+	def collapse_menu(self):
 		self.window = None
 	
+	def resume_menu(self, end_game_msg = ''):
+		self.window = self._get_window()
+		self.menu_message = end_game_msg
+		self.client = udp_client.Client()
+
 	def stop(self):
-		self.collapse_window()
+		self.collapse_menu()
 		self.run = False
 
 	def play_game(self):
 		if self.play_button.clicked:
 			self.play_button.clicked = False
+			self.menu_message = 'Connecting...'
+			self._update_display()
 			self.client.connect(self.name_box.text, self.address_box.text)
 			if self.client.is_connected(): return True
 			self.menu_message = 'Error: Could not connect to server.'
@@ -75,34 +80,42 @@ class ClientMenu:
 		self.window.blit(_text, (512 - _text.get_width()//2 ,280))
 		pg.display.update()
 
- 
+
 class PlayButton:
-	def __init__(self, rect_x, rect_y):
-		self.rect = pg.Rect((rect_x - 115, rect_y, 230, 50))
+	"""dd"""
+	def __init__(self, center_x, top_y, width, height):
+		self.x = center_x
 		self.text_surface = MENU_FONT_1.render("START GAME", True, DARK_GRAY)
+		self.rect = pg.Rect((center_x - width//2, top_y, width, height))
 		self.clicked = False
-		self.hover = False
+		self.hovered = False
 
 	def handle_event(self, event):
 		if event.type == pg.MOUSEBUTTONDOWN:
 			if self.rect.collidepoint(event.pos):
 				self.clicked = True
 		elif event.type == pg.MOUSEMOTION:
-			self.hover = self.rect.collidepoint(event.pos)
+			self.hovered = self.rect.collidepoint(event.pos)
 
 	def draw(self, window):
-		if self.hover: pg.draw.rect(window, LIGHT_GREEN, self.rect, 0)
-		else: pg.draw.rect(window, LIGHT_GRAY, self.rect, 0)
-		pg.draw.rect(window, DARK_GRAY, self.rect, 2)
-		width = self.text_surface.get_width()
-		window.blit(self.text_surface, (512 - width//2, self.rect.y + 10))
+		color = LIGHT_GREEN if self.hovered else LIGHT_GRAY
+		pg.draw.rect(window, color, self.rect, 0)  # Fill color
+		pg.draw.rect(window, DARK_GRAY, self.rect, 2)  # Frame color
+		text_width = self.text_surface.get_width()
+		text_height = self.text_surface.get_height()
+		text_x = self.x - text_width//2
+		text_y = self.rect.y + self.rect.height//2 - text_height//2
+		window.blit(self.text_surface, (text_x, text_y))
 
 
 class InputField:
-	def __init__(self, rect_x, rect_y, title = "", default_text = "", max_len = 20):
-		self.rect = pg.Rect((rect_x - 160, rect_y, 320, 35))
+	def __init__(self, center_x, top_y, width, title_text, \
+				default_text = "", max_len = 20):
 		self.text = default_text
-		self.title_surface = MENU_FONT_1.render(title, True, DARK_GRAY)
+		self.title_surface = MENU_FONT_1.render(title_text, True, DARK_GRAY)
+		self.text_surface = MENU_FONT_2.render(default_text, True, DARK_GRAY)
+		height = self.text_surface.get_height()
+		self.rect = pg.Rect((center_x - width//2, top_y, width, height+5))
 		self.selected = False
 		self.max_length = max_len
 
@@ -116,12 +129,13 @@ class InputField:
 				self.text = ""
 			elif len(self.text) < self.max_length:
 				self.text = self.text + event.unicode
+		input_text = self.text + '|' if self.selected else self.text
+		self.text_surface = MENU_FONT_2.render(input_text, True, DARK_GRAY)
 
 	def draw(self, window):
-		window.blit(self.title_surface, (self.rect.x, self.rect.y - 36))
-		input_text = self.text + '|' if self.selected else self.text
-		text_surface = MENU_FONT_2.render(input_text, True, DARK_GRAY)
-		window.blit(text_surface, (self.rect.x + 5, self.rect.y + 5))
+		title_y = self.rect.y - self.title_surface.get_height() - 4
+		window.blit(self.title_surface, (self.rect.x, title_y))
+		window.blit(self.text_surface, (self.rect.x + 4, self.rect.y + 4))
 		pg.draw.rect(window, DARK_GRAY, self.rect, 2)
 
 
@@ -159,12 +173,16 @@ class ClientGame:
 		"""td"""
 		self._handle_key_presses()
 		if self.client.is_synced():
-			for player in self.players.values(): player.move(time_delta)
+			for player in self.players.values():
+				player.move(time_delta)
+
 		if self.client.needs_transmit():
 			self._update_player_inputs()
-			self.client.sync_state(self.players, self.orbs, self.trackers)
+			self.client.sync_state(time_delta, self.players, \
+					self.orbs, self.trackers)
+
 		if not self.client.is_connected():
-			self.end_state = "Error: Disconnected from server."
+			self.end_game_state = self.client.get_end_state()
 			self.stop()
 		self._update_display(time_delta)
 
@@ -185,9 +203,11 @@ class ClientGame:
 				self.display_game((1920,1080))
 		elif event.type == pg.MOUSEBUTTONDOWN:
 			if event.button == 1:
-				self.trackers['past'].active = not self.trackers['past'].active
+				self.trackers['past'].active = \
+						not self.trackers['past'].active
 			if event.button == 3:
-				self.trackers['server'].active = not self.trackers['server'].active
+				self.trackers['server'].active = \
+						not self.trackers['server'].active
 
 	def _handle_key_presses(self):
 		keys = pg.key.get_pressed()
@@ -255,7 +275,7 @@ class ClientGame:
 		# Draws the score and connection statistics
 		dx, dy, texts = 10, 15, []
 		ping, bw, packet_loss_rate, lag_spike_duration = \
-			self.client.get_connection_quality()
+			self.client.get_connection_statistics()
 		texts.append(SCORE_FONT.render("Score: " \
 					+ str(int(self.player.radius) - START_RADIUS), 1, BLACK))
 		texts.append(SCORE_FONT.render("FPS: " \

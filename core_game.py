@@ -51,7 +51,7 @@ class Player(Graphics):
 		self.name = player_name
 		self.x, self.y = position
 		self.color_idx = random.randrange(len(PLAYER_PALETTE))
-		self.radius = radius
+		self.radius = radius  # Er þetta slæmur siður að nota self.var_name og var_name á sama stað?
 		self.inputs = UserInputs()
 		self.scale = 1
 		self.draw_info = None
@@ -161,7 +161,7 @@ class Network:
 
 	def decode_player(self, encoded_player):
 		name, x, y, color_idx, radius, inputs = encoded_player
-		assert(isinstance(name, str) and len(name) <= NAME_MAX_LENGTH)
+		assert(isinstance(name, str) and len(name) <= MAX_NAME_LENGTH)
 		assert(isinstance(x, int) and isinstance(y, int))
 		assert(0 <= x < WIDTH and 0 <= y < HEIGHT)
 		assert(isinstance(color_idx, int) and 0 <= color_idx < len(PLAYER_PALETTE))

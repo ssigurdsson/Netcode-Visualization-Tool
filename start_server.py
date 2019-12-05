@@ -5,12 +5,7 @@ import server_game
 from config import *
 
 def run_server_game():
-    try:
-        game = server_game.ServerGame()
-    except Exception as exc:
-        raise Exception("Error: Server could not start for reasons: " + str(exc))
-        quit()
-
+    game = server_game.ServerGame()
     game.start()
     clock = pg.time.Clock()
     while game.is_running():
