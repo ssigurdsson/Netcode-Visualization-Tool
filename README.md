@@ -14,12 +14,12 @@ Data analysis about this project is also conducted. The results are shown in the
  First, you need to set up server. After server is running, we can then add client(s).
 
 ```
+python launch_server.py
+```
+
+
+```
 python netblob.py
-```
-
-
-```
-python client_game.py
 ```
 
 ### How to play
