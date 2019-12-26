@@ -37,6 +37,12 @@ In the client side, the user can play with **mouse movement, mouse left/right cl
 * S/D keys changes the package loss rate.
 * X/C keys changes the lag spike duration.
 
+![Game Menu](screenshot_game_menu.png)
+
+![Server View](screenshot_server_view.png)
+
+![Client View](screenshot_client_view.png)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
