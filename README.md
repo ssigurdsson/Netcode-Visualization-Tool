@@ -46,8 +46,6 @@ On the server side, the scoreboard is again displayed in the top-right corner, w
 
 ![Client View](screenshots/client_view.png)
 
-![g](screenshots/asd.gif)
-
 
 ### About
 
