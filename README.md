@@ -55,6 +55,8 @@ The client employes a number of techniques to reduce the impact of poor network 
 
 Another important factor is the load impacted on the client's connection by the frequent server updates. Clients may have limited connection speeds, and so it is important that updates be concisely communicated, while still preserving the integrity of the gameplay. To this end, player positions are communicated to clients on a best-effort-basis at high frequency, while updates relating to orbs are communicated more conservatively with each update being acknowledged. It is also important to allow for updates to be received and processed out of order to minimize the impact of what's known as "packet loss". Updates are thus communicated by User Datagram Protocol (UDP) sockets, to avoid the restrictions on packet order set by Transmission Control Protocol (TCP) sockets.
 
+The above provides only a narrow view of the full scope of techniques employed by this server-client implementation. For a broad summary of conventional networking techniques used in online games see [jasd], and for implementation details of many of these techniques see the python files for the server + client code.
+
 Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high refresh rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
 
 
