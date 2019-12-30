@@ -42,9 +42,9 @@ On the server side, the scoreboard is again displayed in the top-right corner, w
 
 ![Game Menu](screenshots/client_menu.png)
 
-![Server View](screenshots/server_view.png)
-
 ![Client View](screenshots/client_view.png)
+
+![Server View](screenshots/server_view.png)
 
 
 ### About
