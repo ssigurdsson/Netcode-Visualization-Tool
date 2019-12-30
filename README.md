@@ -26,6 +26,8 @@ python netblob.py
 
 The default IP address provided in the client menu will be that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
 
+![Game Menu](screenshots/client_menu.png)
+
 The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
 * Mouse position - controls the characters movement.
 * Mouse left-click - toggles the past player tracker.
@@ -37,12 +39,9 @@ The client receives input from the player by mouse, as well as the keys  W/E, S/
 
 The scoreboard is displayed in the top-right corner, while the player's score, game frame rate, and connection statistics are displayed in the top-left corner.
 
-On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data rate usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. 
-
-
-![Game Menu](screenshots/client_menu.png)
-
 ![Client View](screenshots/client_view.png)
+
+On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data rate usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. 
 
 ![Server View](screenshots/server_view.png)
 
@@ -55,7 +54,7 @@ The client employes a number of techniques to reduce the impact of poor network 
 
 Another important factor is the load impacted on the client's connection by the frequent server updates. Clients may have limited connection speeds, and so it is important that updates be concisely communicated, while still preserving the integrity of the gameplay. To this end, player positions are communicated to clients on a best-effort-basis at high frequency, while updates relating to orbs are communicated more conservatively with each update being acknowledged. It is also important to allow for updates to be received and processed out of order to minimize the impact of what's known as "packet loss". Updates are thus communicated by User Datagram Protocol (UDP) sockets, to avoid the restrictions on packet order set by Transmission Control Protocol (TCP) sockets.
 
-The above provides only a narrow view of the full scope of techniques employed by this server-client implementation. For a broad summary of conventional networking techniques used in online games see [jasd], and for implementation details of many of these techniques see the python files for the server + client code.
+The above provides only a narrow view of the full scope of networking issues addressed. For a broad summary of conventional networking  problems and techniques used for online games see [this article](https://medium.com/@meseta/netcode-concepts-part-1-introduction-ec5763fe458c) or [this video](https://www.youtube.com/watch?v=vTH2ZPgYujQ). For implementation details of many of these techniques see the python files for the server + client code.
 
 Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high refresh rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
 
