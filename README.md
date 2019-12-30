@@ -26,18 +26,28 @@ python netblob.py
 
 The default IP address provided in the client menu will be that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
 
-The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3.
-* Mouse position controls the characters movement.
-* Mouse left-click toggles the past player position.
-* Mouse right-click toggles the server player position.
-* W/E keys adjust the simulated round-trip-time (ping).
-* S/D keys adjust the simulated package loss rate.
-* X/C keys adjust the simulated "lag spike" duration.
-* 1/2/3 keys adjust the window display size.
+The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
+* Mouse position - controls the characters movement.
+* Mouse left-click - toggles the past player tracker.
+* Mouse right-click - toggles the server player tracker.
+* W/E keys - adjust the simulated round-trip-time (ping).
+* S/D keys - adjust the simulated package loss rate.
+* X/C keys - adjust the simulated "lag spike" duration.
+* 1/2/3 keys - adjust the window display size.
 
-The scoreboard is displayed in the top-right corner, while the player's score, game refresh rate (FPS), and connection statistics are displayed in the top-left corner.
+The scoreboard is displayed in the top-right corner, while the player's score, game frame rate, and connection statistics are displayed in the top-left corner.
 
 On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data rate usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. 
+
+
+![Game Menu](screenshots/client_menu.png)
+
+![Server View](screenshots/server_view.png)
+
+![Client View](screenshots/client_view.png)
+
+![g](screenshots/asd.gif)
+
 
 ### About
 
@@ -49,18 +59,6 @@ Another important factor is the load impacted on the client's connection by the 
 
 Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high refresh rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
 
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
-
-![Game Menu](screenshot_game_menu.png)
-
-![Server View](screenshot_server_view.png)
-
-![Client View](screenshot_client_view.png)
 
 ## License
 
