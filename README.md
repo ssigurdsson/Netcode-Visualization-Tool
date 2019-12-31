@@ -23,24 +23,25 @@ python netblob.py
 ```
 
 ### How to play
-
+##### Client
 The default IP address provided in the client menu will be that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
 
 ![Game Menu](screenshots/client_menu.png)
 
 The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
-* Mouse position - controls the characters movement.
-* Mouse left-click - toggles the past player tracker.
-* Mouse right-click - toggles the server player tracker.
-* W/E keys - adjust the simulated round-trip-time (ping).
-* S/D keys - adjust the simulated package loss rate.
-* X/C keys - adjust the simulated "lag spike" duration.
-* 1/2/3 keys - adjust the window display size.
+* *Mouse position* - controls the characters movement.
+* *Mouse left-click* - toggles the past player tracker.
+* *Mouse right-click* - toggles the server player tracker.
+* *W/E keys* - adjust the simulated round-trip-time (ping).
+* *S/D keys* - adjust the simulated package loss rate.
+* *X/C keys* - adjust the simulated "lag spike" duration.
+* *1/2/3 keys* - adjust the window display size.
 
 The scoreboard is displayed in the top-right corner, while the player's score, game frame rate, and connection statistics are displayed in the top-left corner.
 
 ![Client View](screenshots/client_view.png)
 
+##### Server
 On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
 
 ![Server View](screenshots/server_view.png)
