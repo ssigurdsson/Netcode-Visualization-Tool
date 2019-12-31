@@ -81,35 +81,35 @@ class Client:
         return self.end_game_state
 
     def get_connection_statistics(self):
-        return self.connection_statistics
+        return self.connection_quality
 
     def _update_connection_statistics(self, curr_time):
         time_elapsed = curr_time - self.last_probe_time
         if time_elapsed > cfg.STATS_PROBE_INTERVAL:
             # cfg.STATS_PROBE_INTERVAL must be > 0 to ensure time_elapsed > 0
             bandwidth = self.data_load/time_elapsed
-            self.connection_statistics = (self.latency, bandwidth,
+            self.connection_quality = (self.latency, bandwidth,
                     self.packet_loss_rate, self.lag_spike_duration)
             self.data_load = 0
             self.last_probe_time = curr_time
 
-    def increase_ping(self):
-        self.added_ping = min(0.7, self.added_ping + 0.0003)
+    def increase_ping(self, time_delta):
+        self.added_ping = min(0.7, self.added_ping + time_delta/8)
 
-    def decrease_ping(self):
-        self.added_ping = max(0, self.added_ping - 0.0003)
+    def decrease_ping(self, time_delta):
+        self.added_ping = max(0, self.added_ping - time_delta/8)
 
-    def increase_packet_loss(self):
-        self.packet_loss_rate = min(100, self.packet_loss_rate + 0.03)
+    def increase_packet_loss(self, time_delta):
+        self.packet_loss_rate = min(100, self.packet_loss_rate + 8*time_delta)
 
-    def decrease_packet_loss(self):
-        self.packet_loss_rate = max(0, self.packet_loss_rate - 0.03)
+    def decrease_packet_loss(self, time_delta):
+        self.packet_loss_rate = max(0, self.packet_loss_rate - 8*time_delta)
 
-    def increase_lag_spike(self):
-        self.lag_spike_duration = min(5, self.lag_spike_duration + 0.002)
+    def increase_lag_spike(self, time_delta):
+        self.lag_spike_duration = min(5, self.lag_spike_duration + time_delta)
 
-    def decrease_lag_spike(self):
-        self.lag_spike_duration = max(0, self.lag_spike_duration - 0.002)
+    def decrease_lag_spike(self, time_delta):
+        self.lag_spike_duration = max(0, self.lag_spike_duration - time_delta)
 
     def needs_sync(self):
         time_passed = time.time() - self.last_sync_time
@@ -316,10 +316,9 @@ class Client:
                 elif code == cfg.DISCONNECT_CODE:
                     self._accept_disconnection(addr)
 
+            except socket.error:
+                break
             except Exception as exc:
-                if str(exc).startswith('[WinError 10035]'): break  #Timed out
-                if str(exc).startswith('[WinError 10054]'): continue
-                print(exc)
                 print("[CLIENT] Data reception failed for reasons:", exc)
 
     def _accept_connection(self, data):

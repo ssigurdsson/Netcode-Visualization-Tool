@@ -198,7 +198,7 @@ class ClientGame:
         if not self.client.is_connected():
             self.end_game_state = self.client.get_end_state()
             self.stop()
-        self._handle_key_presses()
+        self._handle_key_presses(time_delta)
         self._update_player_inputs()
         for event in pg.event.get():
             self._handle_event(event)
@@ -226,21 +226,21 @@ class ClientGame:
                 self.trackers["server"].active = \
                         not self.trackers["server"].active
 
-    def _handle_key_presses(self):
+    def _handle_key_presses(self, time_delta):
         """dd"""
         keys = pg.key.get_pressed()
         if keys[pg.K_e]:
-            self.client.increase_ping()
+            self.client.increase_ping(time_delta)
         elif keys[pg.K_w]:
-            self.client.decrease_ping()
+            self.client.decrease_ping(time_delta)
         elif keys[pg.K_d]:
-            self.client.increase_packet_loss()
+            self.client.increase_packet_loss(time_delta)
         elif keys[pg.K_s]:
-            self.client.decrease_packet_loss()
+            self.client.decrease_packet_loss(time_delta)
         elif keys[pg.K_c]:
-            self.client.increase_lag_spike()
+            self.client.increase_lag_spike(time_delta)
         elif keys[pg.K_x]:
-            self.client.decrease_lag_spike()
+            self.client.decrease_lag_spike(time_delta)
 
     def _update_player_inputs(self):
         """dd"""
