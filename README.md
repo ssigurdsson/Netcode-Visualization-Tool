@@ -55,7 +55,7 @@ Another important factor is the load impacted on the client's connection by the 
 
 The above provides only a narrow view of the full scope of networking issues addressed. For a broad summary of conventional networking  problems and techniques used for online games see [this article](https://medium.com/@meseta/netcode-concepts-part-1-introduction-ec5763fe458c) or [this video](https://www.youtube.com/watch?v=vTH2ZPgYujQ). For implementation details of many of these techniques see the python files for the server + client code.
 
-Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high refresh rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
+Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high frame rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
 
 
 ## License
