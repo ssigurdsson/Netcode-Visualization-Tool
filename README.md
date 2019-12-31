@@ -13,11 +13,11 @@ This project aims to provide insight into the networking of online multiplayer g
  ```
 pip install pygame
 ```
-A local server may be started by running the launch_server.py file. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
+A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
 ```
 python launch_server.py
 ```
-Once the server is running, or one wishes to connect to a public server, the client is started by running the netblob.py file.
+Once the server is running, or one wishes to connect to a public server, the client is started by running netblob.py.
 ```
 python netblob.py
 ```
