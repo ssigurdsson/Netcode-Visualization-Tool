@@ -9,10 +9,8 @@ This project aims to provide insight into the networking of online multiplayer g
 
 ### How to run
 
- Install pygame. This can be done through pip.
- ```
-pip install pygame
-```
+[Install pygame](https://www.pygame.org/wiki/GettingStarted)
+
 A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
 ```
 python launch_server.py
