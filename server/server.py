@@ -13,12 +13,13 @@ import source.network
 
 class Server:
     """dd"""
-    def __init__(self):
+    def __init__(self, map_size):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind(("", cfg.NETWORK_PORT))
         self.server_socket.settimeout(1)
 
         self.run = False
+        self.map_size = map_size
         self.threads = []
         self.server_time = time.time()
         self.packet_id, self.player_id = 0, 0
@@ -67,7 +68,9 @@ class Server:
     def approve_player_connection(self, player_id, player):
         if player_id not in self.id_map: return
         player_addr = self.id_map[player_id][0]
-        self._connect_player((player_id, source.network.encode_player(player)), player_addr)
+        encoded_player = source.network.encode_player(player)
+        message = (player_id, encoded_player, self.map_size)
+        self._connect_player(message, player_addr)
 
     def drop_player_connection(self, player_id, message):
         if player_id not in self.id_map: return
@@ -139,13 +142,10 @@ class Server:
         for player_id, new_orb_view in orb_views:
             player_addr, curr_orb_view, _, _ = self.id_map[player_id]
             orb_additions, orb_removals = [], []
-            for orb in new_orb_view:
-                if orb not in curr_orb_view:
-                    curr_orb_view.add(orb)
+            for orb in new_orb_view ^ curr_orb_view:
+                if orb in new_orb_view:
                     orb_additions.append(source.network.encode_orb(orb))
-            for orb in list(curr_orb_view):
-                if orb not in new_orb_view:
-                    curr_orb_view.remove(orb)
+                else:
                     orb_removals.append(source.network.encode_orb(orb))
             self.id_map[player_id][1] = new_orb_view
             if orb_additions or orb_removals:
@@ -211,7 +211,6 @@ class Server:
                     self._remove_player(data)
 
             except Exception as exc:
-                if str(exc).startswith('[WinError 10054]'): continue
                 print("[SERVER] Data reception failed for reasons:", exc)
 
     def _add_new_player(self, player_name, player_addr):

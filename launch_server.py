@@ -15,7 +15,7 @@ def run_server_game(player_limit, bot_count, orb_count, field_size):
     while game.is_running():
         time_delta = clock.tick(cfg.SERVER_GAME_REFRESH_RATE)/1000
         game.main_loop(time_delta)
-
+    print(game.timers)
 
 if __name__ == '__main__':
     player_limit = 200

@@ -40,6 +40,7 @@ class Client:
         self.server_time = time.time()
         self.heartbeat = 0
 
+        self.map_size = (0,0)
         self.leaders = []
         self.server_players = {}
         self.past_player = None
@@ -323,7 +324,7 @@ class Client:
 
     def _accept_connection(self, data):
         if not self.connected:
-            self.player_id, player = data
+            self.player_id, player, self.map_size = data
             player = source.network.decode_player(player)
             self.server_players[self.player_id] = player
             self.connected = True

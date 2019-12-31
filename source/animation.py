@@ -9,11 +9,12 @@ import source.config as cfg
 
 
 class GameWindow:
-    def __init__(self, observer, caption, window_size = (1366,768)):
+    def __init__(self, observer, caption, map_size, window_size = (1366,768)):
         os.environ["SDL_VIDEO_CENTERED"] = '1'
         self.caption = caption
         self.window = self._get_window(window_size)
         self.width, self.height = window_size
+        self.map_size = map_size
         self.observer = observer
         self.ratio = 1
         self.transition_speed = 0
@@ -65,13 +66,13 @@ class GameWindow:
         self.transition_speed = self.ratio - 1/self.observer.scale
 
     def _draw_grid(self, color):
-        for i in range(self.observer.field_size[0]//cfg.MAP_CELL_SIZE[0] + 2):
+        for i in range(self.map_size[0]//cfg.MAP_CELL_SIZE[0] + 2):
             x, y = i*cfg.MAP_CELL_SIZE[0], i*cfg.MAP_CELL_SIZE[1]
             x, _, thickness = self._adjust_values(x, 0, 0)
             _, y, thickness = self._adjust_values(0, y, 0)
             if 0 <= x < self.width:
                 pg.draw.line(self.window, color, (x,0), (x, self.height))
-            if 0 <= y < self.height and i <= self.observer.field_size[1]//cfg.MAP_CELL_SIZE[1] + 1:
+            if 0 <= y < self.height and i <= self.map_size[1]//cfg.MAP_CELL_SIZE[1] + 1:
                 pg.draw.line(self.window, color, (0,y), (self.width, y))
 
     def draw_text(self, text_surface, x, y, right_align = False):

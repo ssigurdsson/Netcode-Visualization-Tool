@@ -164,7 +164,9 @@ class ClientGame:
     def __init__(self, client):
         self.client = client
         self.players, self.player = self.client.get_players()
-        self.window = GameWindow(self.player, "Blob Game - Client")
+        self.map_size = self.client.map_size
+        self.window = GameWindow(
+            self.player, "Netblob - Client", self.map_size)
         self.orbs = {}
         past_tracker = Tracker("past player position", cfg.BLUE)
         server_tracker = Tracker("server player position", cfg.RED)
@@ -189,7 +191,7 @@ class ClientGame:
         if self.client.is_synced():
             self.player = self.players[self.client.player_id]
             for player in self.players.values():
-                player.move(time_delta)
+                player.move(self.map_size, time_delta)
 
         if self.client.needs_sync():
             self.client.sync_state(time_delta, self.players,
@@ -290,7 +292,6 @@ class ClientGame:
         for i, player_name in enumerate(reversed(self.client.leaders)):
             if i not in self.window.scoreboard_texts or self.window.scoreboard_texts[i][0] != text:
                 surface = cfg.SCORE_FONT.render(player_name, 1, cfg.BLACK)
-                print(player_name)
                 self.window.scoreboard_texts[i] = (text, surface, 210, top_left_y + 5 + delta_y*(i+1), True)
         for _, surface, pos_x, pos_y, x_offset in self.window.scoreboard_texts.values():
             self.window.draw_text(surface, pos_x, pos_y, x_offset)

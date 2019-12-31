@@ -7,7 +7,7 @@ import source.config as cfg
 from source.entities import Player, Orb
 from source.animation import GameWindow
 from server.server import Server
-
+import time
 
 class CellContainer:
     """dd"""
@@ -74,14 +74,14 @@ class ServerGame:
         self.target_orb_count = target_orb_count
         self.map_size = map_size
         self.bot_id = 0
-        self.server = Server()
+        self.server = Server(map_size)
         self.id_to_player = {}
         self.leaders = []
         self.players = CellContainer(map_size)
         self.orbs = CellContainer(map_size)
         self.orb_id = 0
         self.server_observer = self._get_server_observer()
-        self.window = GameWindow(self.server_observer, "NetBlob - Server")
+        self.window = GameWindow(self.server_observer, "NetBlob - Server", map_size)
         self.observers = collections.deque([self.server_observer])
         self._generate_bots(bot_count)
         self.run = False
@@ -134,7 +134,7 @@ class ServerGame:
         """Main function that maintains and updates the game state"""
         for player in self.id_to_player.values():
             self.players.remove(player)
-            player.move(time_delta)
+            player.move(self.map_size, time_delta)
             self.players.add(player)
 
         self._handle_player_collisions()
@@ -285,7 +285,7 @@ class ServerGame:
                 player = self.id_to_player[player_id]
                 self.server.approve_player_connection(player_id, player)
             elif len(self.id_to_player) < self.player_limit:
-                new_player = Player(player_name, player_id, self.map_size)
+                new_player = Player(player_name, player_id)
                 self._add_player(new_player)
                 self.server.approve_player_connection(player_id, new_player)
             else:
@@ -313,7 +313,7 @@ class ServerGame:
 
         self._draw_scoreboard(sort_players)
         self._draw_statistics(time_delta)
-        pg.display.update()
+        pg.display.flip()
 
     def _draw_scoreboard(self, sort_players):
         """d"""

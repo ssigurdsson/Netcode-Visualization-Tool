@@ -7,15 +7,15 @@ import source.config as cfg
 
 class Player:
     """dd"""
-    def __init__(self, player_name, player_id, field_size,
-                position = (0,0), radius = cfg.START_RADIUS):
+    def __init__(
+        self, player_name, player_id, position = (0,0),
+        radius = cfg.START_RADIUS):
         self.name = player_name
         self.x, self.y = position
         self.id = player_id
         self.color_idx = random.randrange(len(cfg.PLAYER_PALETTE))
         self.radius = radius
         self.inputs = UserInputs()
-        self.field_size = field_size
         self.scale = 1
         self.name_surface = cfg.TITLE_FONT.render(self.name, 1, cfg.BLACK)
         self.scoreboard_surface = cfg.SCORE_FONT.render(self.name, 1, cfg.BLACK)
@@ -33,7 +33,7 @@ class Player:
         self.radius = min(self.radius, cfg.MAX_RADIUS)
         self.scale = math.pow(self.radius/cfg.START_RADIUS, cfg.VIEW_GROWTH_RATE)
 
-    def move(self, time_delta):
+    def move(self, map_size, time_delta):
         """Moves the player based on its inputs and time_delta"""
         mouse_x, mouse_y = self.inputs.x, self.inputs.y
         mouse_distance = math.sqrt(mouse_x*mouse_x + mouse_y*mouse_y)
@@ -53,8 +53,8 @@ class Player:
             if abs(vel_x) < 30: vel_x = 0
             if abs(vel_y) < 30: vel_y = 0
 
-        self.x = min(self.field_size[0]-1, max(0, self.x + time_delta*vel_x))
-        self.y = min(self.field_size[1]-1, max(0, self.y + time_delta*vel_y))
+        self.x = min(map_size[0]-1, max(0, self.x + time_delta*vel_x))
+        self.y = min(map_size[1]-1, max(0, self.y + time_delta*vel_y))
 
 
 class UserInputs:
