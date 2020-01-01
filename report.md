@@ -24,11 +24,11 @@ An advantage of the server authoritative model is that it offloads most of the g
 On the server side the displaying of the game is not a critical function, thus we ommit discussion on the subject. As for the game logic, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game, and as seen in the below figure.
 
 
-![cell view](figures/cell_view.png)
+![cell view](figures/cell_view.gif)
 
 The advantage derived from splitting the game entities into this kind of a grid is that it allows for constant-time extraction of player's local environments under normal conditions. The figure below displays the execution runtime for 1000 game loops under different loads.
 
-![server_scaling](figures/server_scaling)
+![server_scaling](figures/server_scaling.png)
 
 The load is measured in terms of units, where each unit corresponds to a single simulated player along with 50 orbs in a 2560x1440 area. The load is scaled up by joining several units together into one cohesive map of size ranging up to 20x20 units, which corresponds to 400 players simulated simultaneously in a shared environment containing 20.000 orbs.
 
