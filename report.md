@@ -34,7 +34,7 @@ The load is measured in terms of units, where each unit corresponds to a single 
 
 The linear relationship between nr. of units and runtime suggests that there is no significant difference between hosting players in many small environments separately vs hosting players in one large shared environment, given that players and orbs do not aggregate into small sections of the map. This is a reasonable assumption given normal playing conditions. In the event that players do decide to aggregate for whatever reason, the n^2 behavior may be escaped by placing a limit on how many neighboring objects are processed and transmitted to each player. This sacrifice in fidelity is not a big price to pay considering that players would have a hard time processing information about say > 50 other nearby players on their screens either way.
 
-Lastly, the table below displays the execution time profile for the game loop. Note that it does not include the displaying of the game, as that's not a critical function of the server.
+Lastly, the table below displays the execution time profile for the game loop. 
 
 | Server Execution Time Profile       |  Time |
 |-------------------------------------|-------|
