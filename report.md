@@ -21,7 +21,7 @@ An advantage of the server authoritative model is that it offloads most of the g
 
 ### Server
 
-On the server side the displaying of the game is not a critical function, thus we ommit discussion on the subject. As for the game logic, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is displayed in the below figure, which cycles through the unfiltered entities, the entities within visual range of the player (those entities that are transmitted to that player), as well as the collision range of the player which is scanned for colliding entities each game cycle.
+On the server side the displaying of the game is not a critical function, thus we ommit discussion on the subject. As for the game logic, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is displayed in the below figure, which cycles through the unfiltered entities, then the filtered entities within visual range of the player (those entities that are transmitted to that player), and lastly the filtered entities within collision range of the player which are checked for collision.
 
 
 ![cell view](figures/cell_view.gif)
