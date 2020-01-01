@@ -30,7 +30,7 @@ The advantage derived from splitting the game entities into this kind of a grid 
 
 ![server_scaling](figures/server_scaling.png)
 
-The load is measured in terms of units, where each unit corresponds to a single simulated player along with 50 orbs in a 2560x1440 area. The load is scaled up by joining several units together into one cohesive map of size ranging up to 20x20 units, which corresponds to 400 players simulated simultaneously in a shared environment containing 20.000 orbs.
+The load is measured in terms of units, where each unit corresponds to a single simulated player along with 50 orbs in a 2560x1440 area. The load is scaled up by joining several units together into one cohesive map of size ranging up to 20x20 units, which corresponds to 400 players simulated simultaneously in a shared environment containing 20.000 orbs. These simulations may be accessed in the test_server.py file.
 
 The linear relationship between nr. of units and runtime suggests that there is no significant difference between hosting players in many small environments separately vs hosting players in one large shared environment, given that players and orbs do not aggregate into small sections of the map. This is a reasonable assumption given normal playing conditions. In the event that players do decide to aggregate for whatever reason, the n^2 behavior may be escaped by placing a limit on how many neighboring objects are processed and transmitted to each player. This sacrifice in fidelity is not a big price to pay considering that players would have a hard time processing information about say > 50 other nearby players on their screens either way.
 
