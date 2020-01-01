@@ -1,7 +1,8 @@
-"""Provides encoding and decoding functions for objects
-transmitted over the network.
+"""Provides encoding and decoding functions.
 
+These are used for transmission of game objects over the network.
 """
+
 import source.config as cfg
 from source.entities import Player, Orb, UserInputs
 

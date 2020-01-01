@@ -1,4 +1,5 @@
-"""docstring"""
+"""Provides a client game interface for handling of game logic."""
+
 import os
 import time
 import socket
@@ -10,7 +11,12 @@ from source.entities import Player, Tracker, UserInputs
 
 
 class ClientMenu:
-    """d"""
+    """Provides an interactive menu for initializing the client game.
+
+    The two text input fields allow the user to specify and player
+    name and a server ip address. The pre-input default server ip
+    address corresponds to the user's local network ip address.
+    """
     def __init__(self):
         os.environ["SDL_VIDEO_CENTERED"] = '1'  # Centers the game window
         self.window = self._get_window(cfg.MENU_WINDOW_SIZE)
@@ -101,7 +107,7 @@ class ClientMenu:
 
 
 class PlayButton:
-    """dd"""
+    """Provides an interactive play button box."""
     def __init__(self, center_x, top_y, width, height):
         self.x = center_x
         self.text_surface = cfg.MENU_FONT_1.render("START GAME", True, cfg.DARK_GRAY)
@@ -128,7 +134,7 @@ class PlayButton:
 
 
 class InputField:
-    """dd"""
+    """Provides an interactive text input box."""
     def __init__(self, center_x, top_y, width, title_text, \
                 default_text = "", max_len = 20):
         self.text = default_text
@@ -160,7 +166,14 @@ class InputField:
 
 
 class ClientGame:
-    """The Client Game is single threaded for improved frame rate"""
+    """Handles all game logic on the client side.
+
+    The main_loop function updates the entire game state for a given
+    time interval, and updates the display. The player inputs are regularly
+    communicated to the server through a client instance, which handles all
+    server interactions. The game state consists of a collection of
+    players and orbs at different coordinates within a game map.
+    """
     def __init__(self, client):
         self.client = client
         self.players, self.player = self.client.get_players()
@@ -326,4 +339,3 @@ class ClientGame:
                 self.window.statistics_texts[i] = (text, surface, top_left_x + 135 + 115*(i>=3), top_left_y + 5 + i*delta_y)
         for _, surface, pos_x, pos_y in self.window.statistics_texts.values():
             self.window.draw_text(surface, pos_x, pos_y)
-

@@ -1,4 +1,5 @@
-"""Creates an instance of the game on a local server."""
+"""Provides a Server interface for communication with clients."""
+
 import collections
 import pickle
 import time
@@ -12,11 +13,19 @@ import source.network
 
 
 class Server:
-    """dd"""
+    """Handles communication with an arbitrary number of Netblob clients.
+    
+    Communication takes place over UDP socket. Incoming messages are decoded
+    and relayed to the ServerGame instance to which the server belongs.
+    Outgoing messages are received from the same ServerGame instance which
+    calls function sync_state whenever updates are to be transmitted to
+    clients.
+    """
     def __init__(self, map_size):
+        """Initializes the server with a map size defined by map_size"""
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind(("", cfg.NETWORK_PORT))
-        self.server_socket.settimeout(1)
+        self.server_socket.settimeout(5)
 
         self.run = False
         self.map_size = map_size
@@ -210,8 +219,8 @@ class Server:
                 elif code == cfg.DISCONNECT_CODE:
                     self._remove_player(data)
 
-            except Exception as exc:
-                print("[SERVER] Data reception failed for reasons:", exc)
+            except Exception:
+                pass
 
     def _add_new_player(self, player_name, player_addr):
         player_name = source.network.decode_name(player_name)

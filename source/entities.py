@@ -1,4 +1,5 @@
-"""docstring"""
+"""Provides classes for the various Netblob game entities."""
+
 import math
 import random
 import pygame as pg
@@ -6,7 +7,6 @@ import source.config as cfg
 
 
 class Player:
-    """dd"""
     def __init__(
         self, player_name, player_id, position = (0,0),
         radius = cfg.START_RADIUS):
@@ -26,7 +26,7 @@ class Player:
         return math.sqrt(dx*dx + dy*dy)
 
     def eat(self, other):
-        """server-side function"""
+        """Server-side function."""
         adjusted_radius = other.radius - cfg.EAT_VALUE_OFFSET
         self.radius = math.sqrt(
             self.radius*self.radius + adjusted_radius*adjusted_radius)
@@ -34,7 +34,7 @@ class Player:
         self.scale = math.pow(self.radius/cfg.START_RADIUS, cfg.VIEW_GROWTH_RATE)
 
     def move(self, map_size, time_delta):
-        """Moves the player based on its inputs and time_delta"""
+        """Moves the player based on its inputs as well as time_delta."""
         mouse_x, mouse_y = self.inputs.x, self.inputs.y
         mouse_distance = math.sqrt(mouse_x*mouse_x + mouse_y*mouse_y)
         if mouse_distance == 0: return
@@ -58,13 +58,11 @@ class Player:
 
 
 class UserInputs:
-    """dd"""
     def __init__(self, mouse_position = (0,0)):
         self.x, self.y = mouse_position
 
 
 class Tracker:
-    """dd"""
     def __init__(self, tracker_title, tracker_color):
         self.x, self.y = 0, 0
         self.radius = 0
@@ -75,7 +73,6 @@ class Tracker:
 
 
 class Orb:
-    """dd"""
     def __init__(self, position = (0,0), orb_id = 0):
         self.x, self.y = position
         self.id = orb_id

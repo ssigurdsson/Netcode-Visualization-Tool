@@ -1,4 +1,5 @@
-"""Barebones animation module. Could use more entries."""
+"""Barebones animation module. Provides an interface for the game display."""
+
 import os
 import math
 import random

@@ -1,4 +1,5 @@
-"""docstring"""
+"""Provides a Client interface for communication with the server."""
+
 import socket
 import pickle
 import time
@@ -12,7 +13,17 @@ import source.network
 
 
 class Client:
-    """Class to connect, send, and recieve information from the server"""
+    """Handles communication with the server.
+    
+    Communication takes place over UDP socket. Incoming messages are decoded
+    and relayed to the ClientGame instance to which the Client belongs.
+    Outgoing messages are received from the same ClientGame instance which
+    calls the function sync_state whenever updates are to be transmitted to
+    the server.
+    Additonally, the client provides functions to simulate poor network
+    conditions in the form of adjustable round-trip-time, packet loss rate,
+    and lag-spike duration, accessed through function calls.
+    """
     def __init__(self):
         self.server_address = ("0.0.0.0", cfg.NETWORK_PORT)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -34,7 +45,10 @@ class Client:
         self.packet_loss_rate = 0
         self.lag_spike_duration = 0
         self.latency = 0
-        self.connection_quality = (0,0,0,0)  # Compiles data_load, added_ping, packet_loss_rate, and lag_spike_duration into a tuple
+
+        # Compiles data_load, added_ping, packet_loss_rate, and lag_spike_duration into a tuple
+        self.connection_quality = (0,0,0,0)
+
         self.last_probe_time = time.time()
         self.last_sync_time = time.time()
         self.server_time = time.time()
@@ -46,7 +60,6 @@ class Client:
         self.past_player = None
         self.player_id = 0
         self.end_game_state = ''
-
 
     def connect(self, player_name, server_ip):
         """Connects to the server"""

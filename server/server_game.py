@@ -1,4 +1,5 @@
-"""Creates an instance of the game on a local server."""
+"""Provides a server game interface for handling of game logic."""
+
 import collections
 import math
 import random
@@ -7,11 +8,23 @@ import source.config as cfg
 from source.entities import Player, Orb
 from source.animation import GameWindow
 from server.server import Server
-import time
+
 
 class CellContainer:
-    """dd"""
+    """Provides a container that stores items in a cell grid.
+
+    This type of container is useful for extracting neighboring items from
+    the local environments of items without iterating through the entire
+    collection of items. Note that each item may occupy several cells.
+
+    Attributes:
+        item_count: Tracks the number of items stored in the container.
+    """
     def __init__(self, map_size):
+        """Initializes the container with a map size defined by map_size.
+        
+        The cell grid expands to fill in the entire map.
+        """
         self.cell_width, self.cell_height = cfg.MAP_CELL_SIZE
         self.item_count = 0
         self.cells = []
@@ -68,7 +81,14 @@ class CellContainer:
 
 
 class ServerGame:
-    """dd"""
+    """Handles all game logic on the server side.
+    
+    The main_loop function updates the entire game state for a given
+    time interval, and updates the display. The game state is regularly
+    communicated to clients through a Server instance, which handles all
+    client interactions. The game state consists of a collection of
+    players and orbs at different coordinates within a game map.
+    """
     def __init__(self, player_limit, bot_count, target_orb_count, map_size):
         self.player_limit = player_limit
         self.target_orb_count = target_orb_count
@@ -342,4 +362,3 @@ class ServerGame:
                 self.window.statistics_texts[i] = (text, surface, top_left_x + 125, top_left_y + 5 + i*delta_y)
         for _, surface, pos_x, pos_y in self.window.statistics_texts.values():
             self.window.draw_text(surface, pos_x, pos_y)
-

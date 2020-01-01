@@ -1,5 +1,7 @@
-""""""
+"""Specifies constants and initializes various font elements."""
+
 import math
+import sys
 import pygame as pg
 pg.font.init()
 
@@ -25,7 +27,7 @@ CLIENT_STATISTICS_TEXTS = []
 for i, text in enumerate(texts):
     CLIENT_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
 
-
+IS_WINDOWS = sys.platform == 'win32'
 TRACKER_TITLE = SCORE_FONT.render("Trackers:", 1, (0,0,0))
 
 # Color definitions
