@@ -24,7 +24,7 @@ python netblob.py
 ##### Client
 The default IP address provided in the client menu will be that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
 
-![Game Menu](screenshots/client_menu.png)
+![Game Menu](figures/client_menu.png)
 
 The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
 * *Mouse position* - controls the characters movement.
@@ -37,12 +37,12 @@ The client receives input from the player by mouse, as well as the keys  W/E, S/
 
 The scoreboard is displayed in the top-right corner, while the player's score, game frame rate, and connection statistics are displayed in the top-left corner.
 
-![Client View](screenshots/client_view.png)
+![Client View](figures/client_view.png)
 
 ##### Server
 On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
 
-![Server View](screenshots/server_view.png)
+![Server View](figures/server_view.png)
 
 
 ### About
@@ -55,7 +55,7 @@ Another important factor is the load impacted on the client's connection by the 
 
 The above provides only a narrow view of the full scope of networking issues addressed. For a broad summary of conventional networking  problems and techniques used for online games see [this article](https://medium.com/@meseta/netcode-concepts-part-1-introduction-ec5763fe458c) or [this video](https://www.youtube.com/watch?v=vTH2ZPgYujQ). For implementation details of many of these techniques see the python files for the server + client code.
 
-Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high frame rate needed for a smooth playing experience. This is explored in the file labeled [analysis.md](analysis.md).
+Lastly, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the server-side game logic scale appropriately with player count and map size. On the client side, emphasis must be put on rendering the visuals of the game efficiently in order to support the high frame rate needed for a smooth playing experience. This is explored in the file labeled [report.md](report.md).
 
 
 ## License
