@@ -9,10 +9,10 @@ On the client side, emphasis is put on rendering the visuals of the game efficie
 | Client Execution Time Profile       |  Time |
 |-------------------------------------|-------|
 | Client Communication + Game Logic&emsp;&emsp;| 8 s|
-| Clearing the Display                | &emsp;18 s  |
-| Drawing the Orbs                    | &emsp;10 s  |
-| Drawing the Players + Trackers      | &emsp;16 s  |
-| Drawing the Scoreboard + Statistics | &emsp;13 s  |
+| Clearing the Display                | 18 s  |
+| Drawing the Orbs                    | 10 s  |
+| Drawing the Players + Trackers      | 16 s  |
+| Drawing the Scoreboard + Statistics | 13 s  |
 | Applying the Updated Display        | 35 s  |
 | **Total Execution Time**            | **100 s** |
 
