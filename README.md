@@ -22,7 +22,7 @@ python netblob.py
 
 ### How to play
 ##### Client
-The default IP address provided in the client menu is that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
+The default IP address provided in the client menu is that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Start Game" button will attempt to connect the player to the server.
 
 ![Game Menu](figures/client_menu.png)
 
