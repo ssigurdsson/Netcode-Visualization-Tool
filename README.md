@@ -1,4 +1,4 @@
-# Net-Blob: Network Visualization Tool
+# Net-Blob: Netcode Visualization Tool
 
 This project aims to provide insight into the networking of online multiplayer games, or "netcode" as it is broadly termed. An authoritative server-client model enables gameplay inspired by the online game [Agar.io](https://agar.io), which is accompanied by controls that allow the user to simulate poor network conditions. As the subject of this project would suggest, the client employs a number of commonly used techniques for reducing the negative impact of such poor conditions. These techniques are discussed in the about section below.
 
