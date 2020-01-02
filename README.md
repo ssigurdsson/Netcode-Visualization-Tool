@@ -17,7 +17,6 @@ For installation of Pygame refer to [these instructions](https://www.pygame.org/
 ```
 pip intall Pygame
 ```
-
 A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
 ```
 python launch_server.py
@@ -29,7 +28,7 @@ python netblob.py
 
 ### How to play
 ##### Client
-The default IP address provided in the client menu is that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Start Game" button will attempt to connect the player to the server.
+The default IP address provided in the client menu is that of the user's system. Thus, if connecting to a server running on the same machine as the client, the default address should be correct. If connecting to a public server, the public IP address of the server will need to be provided at this stage. Once the player's name is entered, the "Start Game" button will attempt to connect the player to the server.
 
 ![Game Menu](figures/client_menu.png)
 
