@@ -292,7 +292,7 @@ class ClientGame:
         for i, player_name in enumerate(reversed(self.client.leaders)):
             if i not in self.window.scoreboard_texts or self.window.scoreboard_texts[i][0] != text:
                 surface = cfg.SCORE_FONT.render(player_name, 1, cfg.BLACK)
-                self.window.scoreboard_texts[i] = (text, surface, 210, top_left_y + 5 + delta_y*(i+1), True)
+                self.window.scoreboard_texts[i] = (player_name, surface, 210, top_left_y + 5 + delta_y*(i+1), True)
         for _, surface, pos_x, pos_y, x_offset in self.window.scoreboard_texts.values():
             self.window.draw_text(surface, pos_x, pos_y, x_offset)
 
@@ -323,6 +323,6 @@ class ClientGame:
                 if i ==2:
                     surface2 = cfg.SCORE_FONT.render(texts[1], 1, cfg.BLACK)
                     self.window.statistics_texts[1] = (text, surface2, top_left_x + 135, top_left_y + 5 + delta_y)
-                self.window.statistics_texts[i] = (text, surface, top_left_x + 135 + 115*(i>=3), top_left_y + 5 + i*delta_y)
+                self.window.statistics_texts[i] = (text, surface, top_left_x + 135 + 114*(i>=3), top_left_y + 5 + i*delta_y)
         for _, surface, pos_x, pos_y in self.window.statistics_texts.values():
             self.window.draw_text(surface, pos_x, pos_y)
