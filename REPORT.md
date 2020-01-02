@@ -4,7 +4,7 @@ In this document, the performance of the client and the server are analysed. The
 
 
 ### Client
-On the client side, emphasis is put on rendering the visuals of the game efficiently in order to support the high frame rate needed for a smooth playing experience. On a modern system, the frame rate stays above 200 frames/s for the most part, which is good considering the slow working nature of pygame. The table below displays the execution time profile for the main game loop. Note that 92% of execution time is spent displaying the game.
+On the client side, emphasis is put on rendering the visuals of the game efficiently in order to support the high frame rate needed for a smooth playing experience. On a modern system, the frame rate stays above 200 frames/s for the most part, which is good considering the inherently slow nature of Pygame. The table below displays the execution time profile for the main game loop. Note that 92% of execution time is spent displaying the game.
 
 | Client Execution Time Profile       |  Time |
 |-------------------------------------|-------|
@@ -16,7 +16,7 @@ On the client side, emphasis is put on rendering the visuals of the game efficie
 | Applying the Updated Display        | &nbsp;&nbsp;&nbsp;&nbsp;35 s  |
 | **Total Execution Time**            | **100 s** |
 
-An advantage of the server authoritative model is that it offloads most of the game logic onto the server, freeing the client to focus on rendering the display. Unfortunately, pygame does not offer a great toolset for efficiently rendering the visuals, which done exclusively on the CPU. There do exist other less established third-party libraries that improve on this, and so it may be worth exploring alternatives to pygame in the future.
+An advantage of the server authoritative model is that it offloads most of the game logic onto the server, freeing the client to focus on rendering the display. Unfortunately, Pygame does not offer a great toolset for efficiently rendering the visuals, which done exclusively on the CPU. There do exist other less established third-party libraries that improve on this, and so it may be worth exploring alternatives to pygame in the future.
 
 
 ### Server
