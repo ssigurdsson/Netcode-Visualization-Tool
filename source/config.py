@@ -1,8 +1,10 @@
 """Specifies constants and initializes various font elements."""
 
 import math
+import os
 import sys
 import pygame as pg
+os.environ["SDL_VIDEO_CENTERED"] = '1'
 pg.font.init()
 
 NAME_FONT = pg.font.SysFont("gillsans", 20)
@@ -12,23 +14,6 @@ TITLE_FONT = pg.font.SysFont("gillsans", 20)
 MENU_FONT_1 = pg.font.SysFont("gillsans", 28)
 MENU_FONT_2 = pg.font.SysFont("gillsans", 24)
 MENU_FONT_3 = pg.font.SysFont("gillsans", 16)
-
-TEXT_SPACING = 30
-SCOREBOARD_TEXTS = [SCORE_FONT.render("Scoreboard", 1, (0,0,0))]
-for i in range(1,6):
-    SCOREBOARD_TEXTS.append(SCORE_FONT.render(str(i) + ". ", 1, (0,0,0)))
-
-texts = ["Players: ", "Frame Rate: ", "Data Usage: "]
-SERVER_STATISTICS_TEXTS = []
-for i, text in enumerate(texts):
-    SERVER_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
-texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ", "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ","[X / C]  Lag Spike rate: "]
-CLIENT_STATISTICS_TEXTS = []
-for i, text in enumerate(texts):
-    CLIENT_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
-
-IS_WINDOWS = sys.platform == 'win32'
-TRACKER_TITLE = SCORE_FONT.render("Trackers:", 1, (0,0,0))
 
 # Color definitions
 WHITE = (255,255,255)
@@ -52,6 +37,22 @@ BORDER_PALETTE = [(max(0,c1-10),max(0,c2-10),max(0,c3-10)) \
         for c1,c2,c3 in PLAYER_PALETTE]
 MENU_WINDOW_SIZE = (1024,720)
 DEFAULT_WINDOW_SIZE = (1366,768)
+
+TEXT_SPACING = 30
+SCOREBOARD_TEXTS = [SCORE_FONT.render("Scoreboard", 1, (0,0,0))]
+for i in range(1,6):
+    SCOREBOARD_TEXTS.append(SCORE_FONT.render(str(i) + ". ", 1, (0,0,0)))
+
+texts = ["Players: ", "Frame Rate: ", "Data Usage: "]
+SERVER_STATISTICS_TEXTS = []
+for i, text in enumerate(texts):
+    SERVER_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
+texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ", "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ","[X / C]  Lag Spike rate: "]
+CLIENT_STATISTICS_TEXTS = []
+for i, text in enumerate(texts):
+    CLIENT_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
+
+TRACKER_TITLE = SCORE_FONT.render("Trackers:", 1, (0,0,0))
 
 # Game related constants
 BASE_WIDTH, BASE_HEIGHT = 2560, 1440  # Defines the visible range for each player
