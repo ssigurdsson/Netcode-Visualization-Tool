@@ -15,7 +15,7 @@ A local server may be started by running launch_server.py. This file specifies t
 ```
 python launch_server.py
 ```
-Once the server is running, or one wishes to connect to a public server, the client is started by running netblob.py.
+Once the server is running, or one wishes to connect to a public server, the client game is started by running netblob.py.
 ```
 python netblob.py
 ```
