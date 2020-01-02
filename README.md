@@ -46,7 +46,7 @@ The scoreboard is displayed in the top-right corner, while the player's own scor
 ![Client View](figures/client_view.png)
 
 ##### Server
-On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, game frame rate, and server data usage are displayed in the top-left corner. The players' views may be cycled through by clicking the left and right mouse buttons. The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
+On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, game frame rate, and server data usage are displayed in the top-left corner. **The players' views may be cycled through by clicking the left and right mouse buttons.** The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
 
 ![Server View](figures/server_view.png)
 
