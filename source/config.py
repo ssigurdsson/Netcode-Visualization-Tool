@@ -72,8 +72,10 @@ MAX_RADIUS = 1200
 BOT_NAMES = ["Google", "Apple", "Facebook", "Amazon", "Microsoft", "Twitter", "Netflix", "Uber"]
 BOT_INPUT_UPDATE_INTERVAL = 2
 
+CLIENT_GAME_REFRESH_RATE = 0  # 0 means unlimited
 MENU_REFRESH_RATE = 30
-SERVER_GAME_REFRESH_RATE = 50  # The number of times the game state refreshes per second on the server side
+SERVER_GAME_REFRESH_RATE = 50
+
 COLLISION_MARGIN = 0.6 # Smoothens collision checking
 FOV_MARGIN = 1.1  # Margin
 GRAVITY_FACTOR = 2
