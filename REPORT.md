@@ -21,20 +21,20 @@ An advantage of the server authoritative model is that it offloads most of the g
 
 ### Server
 
-On the server side, the displaying of the game is not subject to analysis as it is not a critical function of the server. As for the game logic, in order to support large numbers of clients playing simultaneously in a shared environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is displayed in the below figure, which cycles through the unfiltered entities, then the filtered entities within visual range of the player (those entities that are transmitted to that player), and lastly the filtered entities within collision range of the player which are checked for collision.
+On the server side, the displaying of the game is not subject to analysis as it is not a critical function of the server. As for the game logic, in order to support large numbers of clients playing simultaneously in a shared environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is apparent from the below figure, which cycles through the unfiltered entities, then the filtered entities within visual range of the player (those entities that are transmitted to the player), and lastly the filtered entities within collision-hazard range of the player which are checked for collision.
 
 
 ![cell view](figures/cell_view.gif)
 
-The advantage derived from splitting the game entities into this kind of a grid is that it allows for constant-time extraction of player's local environments under normal conditions. The figure below displays the execution runtime for 1000 game loops under different loads.
+The advantage derived from splitting the game entities into this kind of a grid is that it allows for constant-time extraction of players' local environments under normal conditions. The figure below displays the execution runtime for 1000 game loops under different loads.
 
 ![server_scaling](figures/server_scaling.png)
 
 The load is measured in terms of units, where each unit corresponds to a single simulated player along with 50 orbs in a 2560x1440 area. The load is scaled up by joining several units together into one cohesive map of size ranging up to 20x20 units, which corresponds to 400 players simulated simultaneously in a shared environment containing 20.000 orbs. These simulations may be accessed in the test_server.py file.
 
-The linear relationship between nr. of units and runtime suggests that there is no significant difference between hosting players in many small environments separately vs hosting players in one large shared environment, given that players and orbs do not aggregate into small sections of the map. This is a reasonable assumption given normal playing conditions. In the event that players do decide to aggregate for whatever reason, the n^2 behavior may be escaped by placing a limit on how many neighboring objects are processed and transmitted to each player. This sacrifice in fidelity is not a big price to pay considering that players would have a hard time processing information about say > 50 other nearby players on their screens either way.
+The linear relationship between nr. of units and runtime suggests that there is no significant difference between hosting players in many small environments separately vs hosting players in one large shared environment, given that players and orbs do not aggregate into small sections of the map. This is a reasonable assumption given normal playing conditions. In the event that players do decide to aggregate for whatever reason, the n^2 behavior may be escaped by placing a limit on how many neighboring entities are processed and transmitted to each player. This sacrifice in fidelity is not a big price to pay considering that players would have a hard time processing information about say > 50 other nearby players on their screens either way.
 
-Note that, given the fixed runtime to process the local environments of players, the map could be made arbitrarily large containing an arbitrary number of orbs without increasing the load on the server, as long as the relative player and orb concentrations remain unchanged.
+Note that, given the fixed runtime to process the local environments of players, the map could be made arbitrarily large containing an arbitrary number of orbs without increasing the load on the server game logic, as long as the relative player and orb concentrations remain unchanged.
 
 Lastly, the table below displays the execution time profile for the game loop. 
 
