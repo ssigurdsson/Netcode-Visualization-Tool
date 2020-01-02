@@ -1,4 +1,4 @@
-"""Provides a client game interface for handling of game logic."""
+"""Provides a client menu and client game interface for handling of game logic."""
 
 import os
 import time
@@ -18,7 +18,6 @@ class ClientMenu:
     address corresponds to the user's local network ip address.
     """
     def __init__(self):
-        os.environ["SDL_VIDEO_CENTERED"] = '1'  # Centers the game window
         self.window = self._get_window(cfg.MENU_WINDOW_SIZE)
         self.client = Client()
         self.run = True
@@ -186,7 +185,6 @@ class ClientGame:
         self.trackers = {"past" : past_tracker, "server" : server_tracker}
         self.end_game_state = ''
         self.run = True
-        self.timers = [0]*6
 
     def stop(self):
         self.run = False
@@ -200,7 +198,6 @@ class ClientGame:
 
     def main_loop(self, time_delta):
         """td"""
-        tt = time.time()
         if self.client.is_synced():
             self.player = self.players[self.client.player_id]
             for player in self.players.values():
@@ -213,12 +210,13 @@ class ClientGame:
         if not self.client.is_connected():
             self.end_game_state = self.client.get_end_state()
             self.stop()
+
         self._handle_key_presses(time_delta)
         self._update_player_inputs()
+        self._update_display(time_delta)
+        
         for event in pg.event.get():
             self._handle_event(event)
-        self.timers[0] += time.time() - tt
-        self._update_display(time_delta)
 
     def _handle_event(self, event):
         """dd"""
@@ -266,34 +264,23 @@ class ClientGame:
 
     def _update_display(self, time_delta):
         """dd"""
-        tt = time.time()
         self.window.clear(time_delta)
         if self.window.observer != self.player:
             self.window.set_observer(self.player)
-        self.timers[1] += time.time() - tt
-        tt = time.time()
 
         # draw each player/orb/tracker
         sort_players = sorted(self.players.values(), key=lambda x: x.radius)
         for orb in self.orbs.values():
             self.window.draw_orb(orb)
-        self.timers[2] += time.time() - tt
-        tt = time.time()
 
         for player in sort_players:
             self.window.draw_player(player)
         for tracker in self.trackers.values():
             self.window.draw_tracker(tracker)
-        self.timers[3] += time.time() - tt
-        tt = time.time()
 
         self._draw_scoreboard(sort_players)
         self._draw_statistics(time_delta)
-        self.timers[4] += time.time() - tt
-        tt = time.time()
         pg.display.flip()
-        self.timers[5] += time.time() - tt
-        tt = time.time()
 
     def _draw_scoreboard(self, sort_players):
         """dd"""
