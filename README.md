@@ -22,12 +22,12 @@ python netblob.py
 
 ### How to play
 ##### Client
-The default IP address provided in the client menu will be that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
+The default IP address provided in the client menu is that of a local server. If connecting to a public one, the server's IP address will need to be provided at this stage. Once the player's name is entered, the "Play Game" button will attempt to connect the player to the server.
 
 ![Game Menu](figures/client_menu.png)
 
 The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
-* *Mouse position* - controls the characters movement.
+* *Mouse position* - controls the character's movement.
 * *Mouse left-click* - toggles the past player tracker.
 * *Mouse right-click* - toggles the server player tracker.
 * *W/E keys* - adjust the simulated round-trip-time (ping).
@@ -40,7 +40,7 @@ The scoreboard is displayed in the top-right corner, while the player's score, g
 ![Client View](figures/client_view.png)
 
 ##### Server
-On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data usage are displayed in the top-left corner. The players' views may be cycled through by mouse left- and right-clicking. The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
+On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, server frame rate, and server data usage are displayed in the top-left corner. The players' views may be cycled through by clicking the left and right mouse buttons. The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
 
 ![Server View](figures/server_view.png)
 
