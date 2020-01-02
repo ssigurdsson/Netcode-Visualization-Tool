@@ -13,7 +13,10 @@ The game is developed and tested on Windows 10, although other Platforms should 
 
 ### How to run
 
-For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted).
+For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted). For must users, this will be a simple pip install instruction.
+```
+pip intall Pygame
+```
 
 A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
 ```
