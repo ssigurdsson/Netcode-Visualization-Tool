@@ -1,6 +1,6 @@
 # Netblob - Performance Report
 
-In this document, the performance of the client and the server are analysed. The main challenges faced in each case are discussed, along with solutions to those challenges.
+In this document, the performance of the client and the server are analysed. The main challenges faced in each case are discussed, along with proposed solutions to those challenges.
 
 
 ### Client
