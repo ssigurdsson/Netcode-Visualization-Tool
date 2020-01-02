@@ -1,8 +1,7 @@
 #!/usr/bin/python
-"""This file launches the client game."""
+"""This file launches an instance of the client game."""
 
 import sys
-import time
 import pygame as pg
 from client.client_game import ClientMenu, ClientGame
 import source.config as cfg
@@ -34,7 +33,7 @@ def run_game(game_client):
     game = ClientGame(game_client)
     clock = pg.time.Clock()
     while game.is_running():
-        time_delta = clock.tick_busy_loop()/1000
+        time_delta = clock.tick_busy_loop(cfg.CLIENT_GAME_REFRESH_RATE)/1000
         game.main_loop(time_delta)
     return game.get_end_state()
 
