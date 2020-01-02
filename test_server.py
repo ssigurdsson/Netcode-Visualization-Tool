@@ -1,4 +1,4 @@
-"""Provides some rudementary testing functions for the server side.
+"""Provides some rudementary testing functions for the server game logic.
 
 Additionally, allows for execution time profiling and exploration of server
 game logic scaling with respect to orb density, player count, and map size.
