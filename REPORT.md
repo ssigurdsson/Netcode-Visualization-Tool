@@ -8,12 +8,12 @@ On the client side, emphasis is put on rendering the visuals of the game efficie
 
 | Client Execution Time Profile       |  Time |
 |-------------------------------------|-------|
-| Client Communication + Game Logic&emsp;&emsp;| &emsp;&nbsp;&nbsp;8 s|
+| Client Communication + Game Logic&emsp;&emsp;| 8 s|
 | Clearing the Display                | &emsp;18 s  |
 | Drawing the Orbs                    | &emsp;10 s  |
 | Drawing the Players + Trackers      | &emsp;16 s  |
 | Drawing the Scoreboard + Statistics | &emsp;13 s  |
-| Applying the Updated Display        | &nbsp;&nbsp;&nbsp;&nbsp;35 s  |
+| Applying the Updated Display        | 35 s  |
 | **Total Execution Time**            | **100 s** |
 
 An advantage of the server authoritative model is that it offloads most of the game logic onto the server, freeing the client to focus on rendering the display. Unfortunately, Pygame does not offer a great toolset for efficiently rendering the visuals, which done exclusively on the CPU. There do exist other less established third-party libraries that improve on this, and so it may be worth exploring alternatives to pygame in the future.
