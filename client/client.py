@@ -130,7 +130,7 @@ class Client:
         return time_passed > cfg.CLIENT_SYNC_INTERVAL
 
     def sync_state(self, time_delta, players, orbs, trackers):
-        """Sends key presses to the server"""
+        """Synchronizes the client game state with the server game state"""
         self._retrieve_messages()
         self.last_sync_time = curr_time = time.time()
         while self.server_players_queue:
