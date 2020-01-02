@@ -11,7 +11,6 @@ import source.config as cfg
 
 class GameWindow:
     def __init__(self, observer, caption, map_size, window_size = (1366,768)):
-        os.environ["SDL_VIDEO_CENTERED"] = '1'
         self.caption = caption
         self.window = self._get_window(window_size)
         self.width, self.height = window_size
