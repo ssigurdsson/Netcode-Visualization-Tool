@@ -9,7 +9,7 @@ This project aims to provide insight into the networking of online multiplayer g
 
 ### Platforms
 
-The game is tested on Windows, although other Platforms should be supported.
+The game is tested on Windows 10, although other Platforms should be supported.
 
 ### How to run
 
