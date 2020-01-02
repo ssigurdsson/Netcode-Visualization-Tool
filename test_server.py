@@ -1,17 +1,18 @@
 """Provides some rudementary testing functions for the server game logic.
 
-Additionally, allows for execution time profiling and exploration of server
-game logic scaling with respect to orb density, player count, and map size.
+Additionally, allows for simulation of the server game for execution time 
+profiling, as well as exploration of server game logic scaling with respect
+to orb density, player count, and map size.
 """
 
-import random
-import time
 import math
 import matplotlib.pyplot as pyplot
 import multiprocessing as mp
 import pickle
+import random
 import socket
 import sys
+import time
 import pygame as pg
 import source.config as cfg
 import source.entities
@@ -22,9 +23,7 @@ import server.server_game
 
 
 def simulate_game(game, cycle_count, player_count):
-    """Simulates an instance of the server game for cycle_count cycles.
-
-    The number of simulated players is defined by player_count.
+    """Simulates an instance of the server game.
 
     Args:
         cycle_count: An integer representing the nr of cycles to run.
@@ -33,7 +32,7 @@ def simulate_game(game, cycle_count, player_count):
     Returns:
         A float value representing the execution time of the function.
     """
-    timers = [0]*5
+    #timers = [0]*5
     new_players = []
     for i in range(player_count):
         new_player = source.entities.Player(str(i), i)
@@ -141,10 +140,11 @@ def dummy_client():
                 packet_id, update = data
                 message = pickle.dumps((cfg.ACK_CODE, packet_id))
                 dummy_socket.sendto(message, server_address)
-        except: pass
+        except: 
+            pass
 
 def main():
-    """Initializes a server game instance for simulation purposes."""
+    """Initializes a ServerGame instance for simulation purposes."""
     mp.set_start_method("spawn")
     process = mp.Process(target=dummy_client).start()
     time.sleep(0.5)
