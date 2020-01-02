@@ -47,7 +47,7 @@ texts = ["Players: ", "Frame Rate: ", "Data Usage: "]
 SERVER_STATISTICS_TEXTS = []
 for i, text in enumerate(texts):
     SERVER_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
-texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ", "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ","[X / C]  Lag Spike rate: "]
+texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ", "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ","[X / C]  Spike duration: "]
 CLIENT_STATISTICS_TEXTS = []
 for i, text in enumerate(texts):
     CLIENT_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
