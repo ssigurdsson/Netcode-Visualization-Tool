@@ -9,7 +9,7 @@ This project aims to provide insight into the networking of online multiplayer g
 
 ### How to run
 
-Frist, [Install pygame.](https://www.pygame.org/wiki/GettingStarted)
+First, [Install pygame.](https://www.pygame.org/wiki/GettingStarted)
 
 A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
 ```
