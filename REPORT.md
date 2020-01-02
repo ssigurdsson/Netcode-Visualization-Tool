@@ -16,12 +16,12 @@ On the client side, emphasis is put on rendering the visuals of the game efficie
 | Applying the Updated Display        | &nbsp;&nbsp;&nbsp;&nbsp;35 s  |
 | **Total Execution Time**            | **100 s** |
 
-An advantage of the server authoritative model is that it offloads most of the game logic onto the server, leaving the client free to focus on rendering the display. Unfortunately, pygame does not offer a great toolset for efficiently rendering our visuals, which done exclusively on the CPU. There do exist other less established third-party libraries that improve on this, and so it may be worth exploring alternatives to pygame  in the future.
+An advantage of the server authoritative model is that it offloads most of the game logic onto the server, freeing the client to focus on rendering the display. Unfortunately, pygame does not offer a great toolset for efficiently rendering the visuals, which done exclusively on the CPU. There do exist other less established third-party libraries that improve on this, and so it may be worth exploring alternatives to pygame in the future.
 
 
 ### Server
 
-On the server side the displaying of the game is not a critical function, thus we ommit discussion on the subject. As for the game logic, in order to support large numbers of clients playing simultaneously in the same environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is displayed in the below figure, which cycles through the unfiltered entities, then the filtered entities within visual range of the player (those entities that are transmitted to that player), and lastly the filtered entities within collision range of the player which are checked for collision.
+On the server side, the displaying of the game is not subject to analysis as it is not a critical function of the server. As for the game logic, in order to support large numbers of clients playing simultaneously in a shared environment, it is important that the logic scale appropriately with player count and map size. To that end, the server stores all players and orbs in a CellContainer, which splits the entire game map into the small cells displayed by the grid-pattern seen in game. This is displayed in the below figure, which cycles through the unfiltered entities, then the filtered entities within visual range of the player (those entities that are transmitted to that player), and lastly the filtered entities within collision range of the player which are checked for collision.
 
 
 ![cell view](figures/cell_view.gif)
@@ -48,6 +48,6 @@ Lastly, the table below displays the execution time profile for the game loop.
 | Server Communication              | &nbsp;&nbsp;&nbsp; 10 s  |
 | **Total Execution Time**          | **100 s** |
 
-We see that most of the execution time is spent extracting and processing updates about the player's local view (that is, the orbs and players within visual range of the player that must be displayed on their screen). This..
+We see that most of the execution time is spent extracting and processing updates about the players' local views (that is, updates regarding the orbs and other players within visual range that must be displayed on each player's screen). The runtime of these functions is directly proportional to the number of entities within range of each player, and can not be significantly improved without moving to a faster programming language.
 
 
