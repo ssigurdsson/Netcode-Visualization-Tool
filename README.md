@@ -13,7 +13,7 @@ The game is developed and tested on Windows 10, although other Platforms should 
 
 ### How to run
 
-For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted). For must users, this will be a simple pip install instruction. F.e.
+For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted). For most users, this will be a simple "pip install" instruction. F.e.
 ```
 pip intall Pygame
 ```
