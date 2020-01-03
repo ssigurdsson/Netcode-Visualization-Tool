@@ -56,6 +56,11 @@ class Player:
         self.x = min(map_size[0]-1, max(0, self.x + time_delta*vel_x))
         self.y = min(map_size[1]-1, max(0, self.y + time_delta*vel_y))
 
+        # Implements mass loss based on travel distance
+        mass_change = cfg.MASS_LOSS_RATE*velocity*time_delta
+        self.radius *= math.sqrt(1-mass_change)
+        self.radius = max(cfg.START_RADIUS, self.radius)
+
 
 class UserInputs:
     def __init__(self, mouse_position = (0,0)):
