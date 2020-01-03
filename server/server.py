@@ -25,7 +25,7 @@ class Server:
         """Initializes the server with a map size defined by map_size"""
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind(("", cfg.NETWORK_PORT))
-        self.server_socket.settimeout(5)
+        self.server_socket.settimeout(1)
 
         self.run = False
         self.map_size = map_size
