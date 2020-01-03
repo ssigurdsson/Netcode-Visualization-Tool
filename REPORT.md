@@ -41,13 +41,13 @@ Lastly, the table below displays the execution time profile for the game loop.
 | Server Execution Time Profile       |  Time |
 |-------------------------------------|-------|
 | Processing Player movements &emsp;&emsp;&emsp;| 10 s|
-| Processing Player collisions        | 8 s  |
-| Processing Orb collisions           | 17 s  |
+| Processing Player collisions        | 7 s  |
+| Processing Orb collisions           | 16 s  |
 | Extracting local views              | 26 s  |
 | Processing orb view updates         | 29 s  |
-| Server Communication                | 10 s  |
+| Server Communication                | 12 s  |
 | **Total Execution Time**            | **100 s** |
 
-We see that most of the execution time is spent extracting and processing updates about the players' local views (that is, updates regarding the orbs and other players within visual range that must be displayed on each player's screen). The runtime of these functions is directly proportional to the number of entities within range of each player, and can not be significantly improved without moving to a faster programming language.
+We see that most of the execution time is spent extracting and processing updates about the players' local views (that is, updates regarding the orbs and other players within visual range that must be displayed on each player's screen). The runtime of these functions is directly proportional to the number of entities within range of each player, and can not be immediately improved without either moving to a faster programming language or significant rework.
 
 
