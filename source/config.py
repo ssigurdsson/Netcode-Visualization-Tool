@@ -67,6 +67,7 @@ MIN_ORB_RADIUS = 18  # Size of the orbs in units
 MAX_ORB_RADIUS = 20
 EAT_VALUE_OFFSET = 10
 MAP_CELL_SIZE = (600,600)
+MASS_LOSS_RATE = 1/100000
 START_RADIUS = 50
 MAX_RADIUS = 1200
 BOT_NAMES = ["Google", "Apple", "Facebook", "Amazon", "Microsoft", "Twitter", "Netflix", "Uber"]
