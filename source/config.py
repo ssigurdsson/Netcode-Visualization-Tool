@@ -31,8 +31,7 @@ ORB_PALETTE = [(255,0,0), (255, 0, 255), (128,255,0),
                 (0,0,255), (0,0,255), (128,0,255)]
 PLAYER_PALETTE = [(255,64,128), (255, 128, 0), (128,255,0),
                   (0,255,128), (128, 128, 255), (128,255,255),
-                  (255,128,255), (255,255,110), (255,128,255)
-                 ]
+                  (255,128,255), (255,255,110), (255,128,255)]
 BORDER_PALETTE = [(max(0,c1-10),max(0,c2-10),max(0,c3-10)) \
         for c1,c2,c3 in PLAYER_PALETTE]
 MENU_WINDOW_SIZE = (1024,720)
@@ -47,7 +46,9 @@ texts = ["Players: ", "Frame Rate: ", "Data Usage: "]
 SERVER_STATISTICS_TEXTS = []
 for i, text in enumerate(texts):
     SERVER_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
-texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ", "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ","[X / C]  Spike duration: "]
+texts = ["Player Score: ", "Frame Rate: ", "Data Usage: ",
+         "[W / E] Round Trip Time: ", "[S / D]  Packet loss rate: ",
+         "[X / C]  Spike duration: "]
 CLIENT_STATISTICS_TEXTS = []
 for i, text in enumerate(texts):
     CLIENT_STATISTICS_TEXTS.append(SCORE_FONT.render(text, 1, (0,0,0)))
@@ -67,9 +68,9 @@ MIN_ORB_RADIUS = 18  # Size of the orbs in units
 MAX_ORB_RADIUS = 20
 EAT_VALUE_OFFSET = 10
 MAP_CELL_SIZE = (600,600)
-MASS_LOSS_RATE = 1/100000
+MASS_LOSS_RATE = 1/500000
 START_RADIUS = 50
-MAX_RADIUS = 1200
+MAX_RADIUS = 1500
 BOT_NAMES = ["Google", "Apple", "Facebook", "Amazon", "Microsoft", "Twitter", "Netflix", "Uber"]
 BOT_INPUT_UPDATE_INTERVAL = 2
 

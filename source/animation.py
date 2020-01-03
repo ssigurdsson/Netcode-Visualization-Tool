@@ -10,10 +10,10 @@ import source.config as cfg
 
 
 class GameWindow:
-    def __init__(self, observer, caption, map_size, window_size = (1366,768)):
+    def __init__(self, observer, caption, map_size):
         self.caption = caption
-        self.window = self._get_window(window_size)
-        self.width, self.height = window_size
+        self.window = self._get_window(cfg.DEFAULT_WINDOW_SIZE)
+        self.width, self.height = cfg.DEFAULT_WINDOW_SIZE
         self.map_size = map_size
         self.observer = observer
         self.ratio = 1
