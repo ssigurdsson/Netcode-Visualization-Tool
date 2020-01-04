@@ -223,6 +223,12 @@ class Server:
                 pass
 
     def _add_new_player(self, player_name, player_addr):
+        """Adds a new player connecting from a unique address to the game.
+        
+        Note that we identify players by address, and forego encryption for
+        the sake of simplicity. This means that dynamic addresses are not
+        supported.
+        """
         player_name = source.network.decode_name(player_name)
         if player_addr not in self.connected_addresses:
             self.connected_addresses.add(player_addr)
