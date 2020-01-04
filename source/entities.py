@@ -57,9 +57,9 @@ class Player:
         self.y = min(map_size[1]-1, max(0, self.y + time_delta*vel_y))
 
         # Implements mass loss based on travel distance
-        mass_loss = cfg.MASS_LOSS_RATE*velocity*time_delta
-        self.radius *= math.sqrt(1-mass_loss)
-        self.radius = max(cfg.START_RADIUS, self.radius)
+        #mass_loss = cfg.MASS_LOSS_RATE*velocity*time_delta
+        #self.radius *= math.sqrt(1-mass_loss)
+        #self.radius = max(cfg.START_RADIUS, self.radius)
 
 
 class UserInputs:
