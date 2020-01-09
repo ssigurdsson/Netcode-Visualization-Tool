@@ -32,7 +32,7 @@ The default IP address provided in the client menu is that of the user's own sys
 
 ![Game Menu](figures/client_menu.png)
 
-The client receives input from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
+The client receives **input** from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
 * *Mouse position* - controls the character's movement.
 * *Mouse left-click* - toggles the past player tracker.
 * *Mouse right-click* - toggles the server player tracker.
