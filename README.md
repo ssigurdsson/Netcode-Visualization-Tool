@@ -31,6 +31,7 @@ python netblob.py
 The default IP address provided in the client menu is that of the user's own system (local address). Thus, if connecting to a server running on the same machine as the client, the default address should work. If connecting to a server running on a different machine, either the local or public IP address of that server will need to be provided at this stage, depending on whether it's running on the local network or not. Then, once the player's name is entered, the "Start Game" button will attempt to connect the player to the server.
 
 ![Game Menu](figures/client_menu.png)
+![Client View](figures/client_view.png)
 
 The client receives **input** from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
 * *Mouse position* - controls the character's movement.
@@ -43,7 +44,6 @@ The client receives **input** from the player by mouse, as well as the keys  W/E
 
 The scoreboard is displayed in the top-right corner, while the player's own score, game frame rate, and connection statistics are displayed in the top-left corner.
 
-![Client View](figures/client_view.png)
 
 ##### Server
 On the server side, the scoreboard is again displayed in the top-right corner, while the number of players, game frame rate, and server data usage are displayed in the top-left corner. **The players' views may be cycled through by clicking the left and right mouse buttons.** The server provides the option of generating autonomous bots that interact with real players, which are seen in the below image.
