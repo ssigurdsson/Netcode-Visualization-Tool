@@ -33,6 +33,7 @@ The default IP address provided in the client menu is that of the user's own sys
 ![Game Menu](figures/client_menu.png)
 
 The figure below provides a brief snapshot of the gameplay. Note that a "lag spike" duration of 1 second is enabled. This means that every 10 seconds, the connection to the server will drop for exactly 1 second, which is seen early on in the gameplay below. The scoreboard is displayed in the top-right corner, while the player's own score, game frame rate, and connection statistics are displayed in the top-left corner.
+
 ![Client View](figures/client_view.png)
 
 The client receives **input** from the player by mouse, as well as the keys  W/E, S/D, X/C, and the keys 1/2/3. 
