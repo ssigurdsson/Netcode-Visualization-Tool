@@ -13,15 +13,15 @@ The game is developed and tested on Windows 10, although other Platforms should 
 
 ### How to run
 
-For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted). For most users, this will be a simple "pip install" instruction. F.e.
+For installation of Pygame refer to [these instructions](https://www.pygame.org/wiki/GettingStarted). Generally, this will be a simple "pip install" instruction i.e.
 ```
 pip intall Pygame
 ```
-A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of player bots running on the server.
+A local server may be started by running launch_server.py. This file specifies the size of the map, the orb density, and the number of bots running on the server.
 ```
 python launch_server.py
 ```
-Once the server is running, or one wishes to connect to a public server, the client game is started by running netblob.py.
+Once the server is running, or one wishes to connect to a public server, the client game is launched by running netblob.py.
 ```
 python netblob.py
 ```
@@ -32,7 +32,7 @@ The default IP address provided in the client menu is that of the user's own sys
 
 ![Game Menu](figures/client_menu.png)
 
-The figure below provides a brief snapshot of the gameplay. Note that a "lag spike" duration of 1 second is enabled. This means that every 10 seconds, the connection to the server will drop for exactly 1 second, which is seen early on in the gameplay below. The scoreboard is displayed in the top-right corner, while the player's own score, game frame rate, and connection statistics are displayed in the top-left corner.
+The figure below provides a brief snapshot of the gameplay. Note that a "lag spike" duration of 1 second is enabled. This means that every 10 seconds, the connection to the server will drop for exactly 1 second, which is seen early on in the gameplay below. The scoreboard is displayed in the top-right corner, while the player's own score, frame rate, and connection statistics are displayed in the top-left corner.
 
 ![Client View](figures/client_view.png)
 
